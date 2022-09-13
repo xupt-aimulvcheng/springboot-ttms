@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script th:src="@{/main/layui/layui.js}" charset="utf-8"></script>
+    <script th:src="@{/main/js/jquery-2.1.3.min.js}" charset="utf-8"></script>
+    <link rel="stylesheet" th:href="@{/main/layuimini/lib/layui-v2.6.3/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/main/layuimini/css/public.css}" media="all">
+    <script th:src=" @{/main/js/axios.min.js}"></script>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="" id="searchForm">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">电影名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">日期范围</label>
+                            <div class="layui-inline" id="Date">
+                                <div class="layui-input-inline">
+                                    <input value="" type="text" id="startDate" name="startDate" class="layui-input"
+                                           placeholder="开始日期">
+                                </div>
+                                <div class="layui-form-mid">-</div>
+                                <div class="layui-input-inline">
+                                    <input value="" type="text" id="endDate" name="endDate" class="layui-input"
+                                           placeholder="结束日期">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">状态</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="status" value="上映中" title="上映中">
+                                <input type="radio" name="status" value="未上映" title="未上映">
+                                <input type="radio" name="status" value="已下线" title="已下线">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button id="search" type="submit" class="layui-btn layui-btn-radius layui-btn-normal"
+                                    lay-submit lay-filter="data-search-btn">
+                                <i class="layui-icon layui-icon"></i> 搜 索
+                            </button>
+                            <button id="reset-form" type="reset" class="layui-btn layui-btn-radius layui-btn-primary">
+                                <i class="layui-icon layui-icon-fonts-clear"></i> 清 空
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加</button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除</button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">修改</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+            <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="upload">上传预告片</a>
+        </script>
+
+    </div>
+</div>
+<script type="text/javascript"  th:inline="none">
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#Date' //开始时间和结束时间所在 input 框的父选择器
+            //设置开始日期、日期日期的 input 选择器
+            ,range: ['#startDate', '#endDate'] //数组格式为 layui 2.6.6 开始新增
+        });
+    });
+
+    function refresh() {
+        $('#reset-form').click();
+        $('#search').click();
+    }
+
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+        table.render({
+            elem: '#currentTableId',
+            url: '/movie/getMovie',
+            toolbar: '#toolbarDemo',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '电影列表',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }]
+            ,
+            cols: [[
+                {type: "checkbox", width: 50},
+                {field: 'id', width: 195, title: '编号', sort: true},
+                {field: 'mName', width: 222, title: '电影名称'},
+                {field: 'mType', width: 200, title: '类型'},
+                {field: 'mLength', width: 200, title: '时长', sort: true},
+                {field: 'mPrice', width: 200, title: '价格', sort: true},
+                {field: 'mDate', width: 200, title: '日期', sort: true},
+                {field: 'mDirector', width: 200, title: '导演'},
+                {field: 'mActor', width: 200, title: '演员'},
+                {field: 'status', width: 200, title: '状态'},
+                {field: 'mIntroduction', width: 270, title: '电影简介'},
+                {title: '操作',width:280, minWidth: 150, toolbar: '#currentTableBar', align: "center"}
+            ]],
+            limits: [5, 10, 15, 20, 25, 50, 100],
+            limit: 5,
+            page: true,
+            skin: 'line',
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            var result = JSON.stringify(data.field);
+            //执行搜索重载
+            table.reload('currentTableId', {
+                page: {
+                    curr: 1  //重新从第1页开始
+                }
+                , where: {
+                    startDate: data.field.startDate,
+                    endDate: data.field.endDate,
+                    name: data.field.name,
+                    status: data.field.status
+                }
+            });
+            return false;
+        });
+
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add') {  // 监听添加操作
+                var index = layer.open({
+                    title: '添加演出厅',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: '/movie/add',
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            } else if (obj.event === 'delete') {  // 监听删除操作
+                var checkStatus = table.checkStatus('currentTableId')
+                    , data = checkStatus.data;
+                if (data.length == 0) {
+                    layer.alert("您没有选中任何数据", {icon: 2, anim: 6, title: "警告"});
+                    return false;
+                }
+                layer.confirm('真的删除行么', function (index) {
+                    var Arrid = new Array();
+                    for (var i = 0; i < data.length; i++) {
+                        Arrid.push(data[i].id);
+                    }
+                    var ids = Arrid.join(",");
+                    var url = '/movie/deleteMovie/' + ids;
+                    axios.post(
+                        url,
+                    ).then(function (response){
+                        var data = response.data;
+                        layer.msg(response.data, {
+                            icon: 1,
+                            title: "操作结果"
+                        })
+                        refresh();
+                    })
+                })
+            }
+        });
+
+        //监听表格复选框选择
+        table.on('checkbox(currentTableFilter)', function (obj) {
+            console.log(obj)
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                console.log(data.hname);
+                var index = layer.open({
+                    title: '编辑用户',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: '/movie/getMovieById/' + data.id,
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            } else if (obj.event === 'delete') {
+                var data = obj.data;
+                layer.confirm("您确定要删除" + data.mName + "行么", function (index) {
+                    var id = data.id;
+                    var url = '/movie/deleteMovie/' + id;
+                    $.post(url, function (data, status) {
+                        layer.msg(data, {
+                            icon: 1,
+                            title: "操作结果",
+                            end:refresh()
+                        })
+                    })
+                });
+            }
+            else if (obj.event==='upload'){
+                var index = layer.open({
+                    title: '上传封面',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: '/movie/upload/' + data.id,
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            }
+        });
+    });
+</script>
+</body>
+</html>

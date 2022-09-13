@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>上传封面</title>
+    <link rel="stylesheet" th:href="@{/main/layuimini/lib/layui-v2.6.3/css/layui.css}" media="all">
+    <script th:src="@{/main/layui/layui.js}" charset="utf-8"></script>
+</head>
+<body>
+<input type="hidden" id="m_id" th:value="${m_id}">
+<div class="layui-btn-container">
+    <button type="button" class="layui-btn" id="test5"><i class="layui-icon"></i>上传预告片</button>
+    <br>
+    <br>
+    <button type="button" class="layui-btn" id="test3"><i class="layui-icon"></i>上传对应预告片的封面</button>
+    <div class="layui-upload-list">
+        <img class="layui-upload-img" id="demo1">
+        <p id="demoText"></p>
+    </div>
+</div>
+<div class="layui-form">
+<div class="layui-form-item layui-form-text">
+    <label class="layui-form-label">请输入预告片标题</label>
+    <div class="layui-input-block">
+        <textarea placeholder="请输入预告片标题" id="desc" name="desc" class="layui-textarea"></textarea>
+    </div>
+    <div class="layui-input-block">
+        <button type="submit" class="layui-btn" id="sub" lay-submit="" lay-filter="sub">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</div>
+</div>
+<div id="v_id"></div>
+</body>
+<script>
+    layui.use(['upload', 'element', 'layer', 'form'], function () {
+
+        var $ = layui.jquery
+            , upload = layui.upload
+            , element = layui.element
+            , form = layui.form
+            , layer = layui.layer;
+        form.render();
+        let m_id = $('#m_id').val();
+        let desc = $('#desc').val();
+        upload.render({
+            elem: '#test5'
+            , url: '/videoUpload' //此处配置你自己的上传接口即可
+            /*,auto:false
+            ,bindAction:'#sub'*/
+            , accept: 'video' //视频
+            , data: {
+                m_id: m_id,
+            }
+            , done: function (res) {
+                let id= res;
+                layer.msg('上传成功');
+                form.on('submit(sub)', function (data) {
+                    $.post(
+                        '/video/updateDesc',
+                        {
+                            desc:$('#desc').val(),
+                            id: id,
+                        },
+                        function (res){
+                            layer.msg(res, {
+                                icon: 1,
+                                time: 1500,
+                            });
+                        }
+                    )
+                    upload.render({ //允许上传的文件后缀
+                        elem: '#test3'
+                        , url: '/imgUpload' //此处配置你自己的上传接口即可
+                        , accept: 'file' //普通文件
+                        , before: function (obj) {
+                            //预读本地文件示例，不支持ie8
+                            obj.preview(function (index, file, result) {
+                                $('#demo1').attr('src', result); //图片链接（base64）
+                            });
+                        }
+                        , data: {
+                            m_id: m_id,
+                            id: id,
+                        }
+                        , done: function (res) {
+                            layer.msg('上传成功', {
+                                icon: 1,
+                                time: 1500,
+                                end: function () {
+                                    window.location = '/movie/index';
+                                }
+                            });
+                        }
+                        , error: function (res) {
+                            layer.msg('上传成功', {
+                                icon: 1,
+                                time: 1500,
+                                end: function () {
+                                    window.location = '/movie/index';
+                                }
+                            });
+                        }
+                    });
+                })
+
+            }
+        });
+    })
+</script>
+</html>

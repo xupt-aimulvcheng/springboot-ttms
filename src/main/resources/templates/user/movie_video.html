@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/main/css/video.css}">
+    <script th:src="@{/main/js/jquery-2.1.3.min.js}"></script>
+</head>
+<body>
+<input type="hidden" id="v_id" name="id" th:value="${id}">
+<div class="video-bg">
+    <div class="container clearfix">
+        <div class="main-section">
+            <div class="video-container">
+                <video id="video" src="" width="730" height="450" controls muted="muted" autoplay loop="loop"></video>
+            </div>
+            <div class="movie-info clearfix">
+                <div class="text">
+                    <div class="movie-info-title" title="">
+                        <a id="m-name" href=""></a>
+                    </div>
+                    <div class="movie-info-meta">
+                        <div class="movie-desc">
+                        </div>
+                        <div class="movie-ver"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-section">
+            <div class="video-list-title">相关视频</div>
+            <div class="video-list-container">
+                <ul id="videos">
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    //将相关视频放在右边
+    function getVideos(json) {
+        let html = "";
+        for (let i = 0; i < json.length; i++) {
+            let aHref = "/video/toVideo/" + json[i].id;
+            let time = formatTime(json[i].len)
+            html = html + '<li class="media">' +
+                '<div class="media-left">' +
+                '<div class="top-info-thumb">' +
+                '<a href= ' + "\"" + aHref + "\"" + 'style="color: inherit;text-decoration:none">' +
+                '<img src= ' + "\"" + json[i].mSrc + "\"" + 'class="media-boject" alt="">' +
+                '<div class="time">' + time + '</div>' +
+                '</a>' +
+                '</div>' +
+                '</div>' +
+                '<div class="media-body media-middle">' +
+                '<div class="video-title">' +
+                '<a title= ' + "\"" + json[i].desc + "\"" + ' href= ' + "\"" + aHref + "\"" + 'style="color: inherit;text-decoration:none">' +
+                json[i].desc +
+                '</a>' +
+                '</div>' +
+                // '<div class="video-play-count"></div>' +
+                '</li>';
+            $("#videos").html(html);
+            $("#videos").children(":first").addClass("active");
+        }
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: "/video/getVideoById/" + $("#v_id").val(),
+        success:
+            function (res) {
+                let json = res.data;
+                $("#video").attr("src", json[0].vSrc);
+                $.ajax({
+                        url: "/movie/getMovieInfoById/" + json[0].mId
+                        , type: 'post'
+                        , success:
+                            function (res) {
+                                let data = res.data;
+                                $.ajax({
+                                    url: '/video/getVideoByMId/' + data.id,
+                                    type: 'post',
+                                    data: {
+                                        id: $("#v_id").val(),
+                                    },
+                                    success:
+                                        function (res) {
+                                            getVideos(res.data);
+                                        }
+                                })
+                                $("#m-name").html(data.mName);
+                                $("#m-name").attr("href", "/user/movie_index/" + data.id);
+                                $(".movie-desc").html(data.mDate + "&nbsp&nbsp中国大陆上映&nbsp&nbsp" + data.mType);
+                            }
+                    }
+                )
+
+            }
+    })
+
+
+    //将秒转化为分钟
+    function formatTime(time) {
+        const h = parseInt(time / 3600);
+        const minute = parseInt(time / 60 % 60)
+        const second = Math.ceil(time % 60)
+        const hours = h < 10 ? '0' + h : h
+        const formatSecond = second > 59 ? 59 : second
+        return `${hours > 0 ? `${hours}:` : ''}${minute < 10 ? '0' + minute : minute}:${formatSecond < 10 ? '0' + formatSecond : formatSecond}`
+    }
+</script>
+</html>

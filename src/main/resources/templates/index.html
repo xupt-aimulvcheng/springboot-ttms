@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>后台管理-登陆</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" th:href="@{/main/layuimini/lib/layui-v2.6.3/css/layui.css}" media="all">
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden
+        }
+
+        body {
+            background: #1E9FFF;
+        }
+
+        body:after {
+            content: '';
+            background-repeat: no-repeat;
+            background-size: cover;
+            -webkit-filter: blur(3px);
+            -moz-filter: blur(3px);
+            -o-filter: blur(3px);
+            -ms-filter: blur(3px);
+            filter: blur(3px);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+        }
+
+        .layui-container {
+            width: 100%;
+            height: 100%;
+            overflow: hidden
+        }
+
+        .admin-login-background {
+            width: 360px;
+            height: 300px;
+            position: absolute;
+            left: 50%;
+            top: 40%;
+            margin-left: -180px;
+            margin-top: -100px;
+        }
+
+        .logo-title {
+            text-align: center;
+            letter-spacing: 2px;
+            padding: 14px 0;
+        }
+
+        .logo-title h1 {
+            color: #1E9FFF;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .login-form {
+            background-color: #fff;
+            border: 1px solid #fff;
+            border-radius: 3px;
+            padding: 14px 20px;
+            box-shadow: 0 0 8px #eeeeee;
+        }
+
+        .login-form .layui-form-item {
+            position: relative;
+        }
+
+        .login-form .layui-form-item label {
+            position: absolute;
+            left: 1px;
+            top: 1px;
+            width: 38px;
+            line-height: 36px;
+            text-align: center;
+            color: #d2d2d2;
+        }
+
+        .login-form .layui-form-item input {
+            padding-left: 36px;
+        }
+
+        .captcha {
+            width: 60%;
+            display: inline-block;
+        }
+
+        .captcha-img {
+            display: inline-block;
+            width: 34%;
+            float: right;
+        }
+
+        .captcha-img img {
+            height: 34px;
+            border: 1px solid #e6e6e6;
+            height: 36px;
+            width: 100%;
+        }
+
+        #captchaPic{
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-container">
+    <div class="admin-login-background">
+        <div class="layui-form login-form">
+            <form class="layui-form">
+                <div class="layui-form-item logo-title">
+                    <h1>开心影院用户登录</h1>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-icon layui-icon-username" for="username"></label>
+                    <input type="text" name="username" id="username" lay-verify="required|username" placeholder="用户名"
+                           autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-icon layui-icon-password" for="password"></label>
+                    <input type="password" name="password" id="password" class="layui-input" verify="required|password"
+                           placeholder="密码" autocomplete="off">
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-icon layui-icon-vercode" for="captcha"></label>
+                    <input type="text" name="captcha" id="captcha" lay-verify="required|captcha" placeholder="图形验证码"
+                           autocomplete="off" class="layui-input verification captcha">
+                    <div class="captcha-img">
+                        <img id="captchaPic" th:src="@{/captcha}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <input type="checkbox" name="rememberMe" value="true" lay-skin="primary" title="记住密码">
+                </div>
+                <div class="layui-form-item">
+                    <button id="login-in" class="layui-btn layui-btn layui-btn-normal layui-btn-fluid" lay-submit=""
+                            lay-filter="login">登 入
+                    </button>
+                </div>
+            </form>
+            <div style="float: left;margin-left: 20px;/*margin-top: 20px;*/"><a th:href="@{/register}">注册</a></div>
+            <span id="error" style="/*margin-top: 20px;*/margin-left: 67px;display: inline-block;color: #0C0C0C"></span>
+            <div style="float: right;/*margin-top: 20px*/;"><a th:href="@{/forget-pw}">?忘记密码</a></div>
+        </div>
+
+    </div>
+</div>
+<script th:src="@{/main/layuimini/lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
+<script th:src="@{/main/layuimini/lib/layui-v2.6.3/layui.js}" charset="utf-8"></script>
+<script th:src="@{/main/layuimini/lib/jq-module/jquery.particleground.min.js}" charset="utf-8"></script>
+<script th:src=" @{/main/js/axios.min.js}"></script>
+<script>
+    $("#captchaPic").click(function() {
+        $("#captchaPic").attr("src", "/captcha?Date="+new Date().getTime() )
+    });
+
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer;
+        form.verify({
+            username: function (value, item) { //value：表单的值、item：表单的DOM对象
+                if (!/^[a-zA-Z0-9_-]{4,8}$/.test(value)) {
+                    return '用户名只能由4到8位的数字字母下划线组成';
+                }
+            }
+            ,
+            password: [
+                /^(?=.*[a-z])(?=.*\d)[\S]{6,16}/
+                ,'密码必须6~16位长度且且必须包含字母和数字'
+            ]
+        });
+        // 登录过期的时候，跳出ifram框架
+        if (top.location != self.location) top.location = self.location;
+
+        // 粒子线条背景
+        $(document).ready(function () {
+            $('.layui-container').particleground({
+                dotColor: '#7ec7fd',
+                lineColor: '#7ec7fd'
+            });
+        });
+
+        // 进行登录操作
+        form.on('submit(login)', function (data) {
+            $("#login-in").attr("disabled", "disabled").addClass("layui-btn-disabled");
+            data = data.field;
+            if (data.username == '') {
+                layer.msg('用户名不能为空');
+                return false;
+            }
+            if (data.password == '') {
+                layer.msg('密码不能为空');
+                return false;
+            }
+            if (data.captcha == '') {
+                layer.msg('验证码不能为空');
+                return false;
+            }
+            $.post(
+                '/user/login',
+                data,
+                function (response) {
+                    var data = response.info;
+                    if (data == "登陆成功") {
+                        document.cookie = "username=" + document.getElementById("username").value;
+                        $("#login-in").removeAttr("disabled", "disabled").removeClass("layui-btn-disabled");
+                        error.innerHTML="";
+                        layer.msg('登录成功', {
+                            icon: 1,
+                            time: 1500,
+                            end: function () {
+                                window.location = "/user/index";
+                            }
+                        });
+                    } else {
+                        $("#login-in").removeAttr("disabled", "disabled").removeClass("layui-btn-disabled");
+                        layui.use('layer', function () {
+                            var layer = layui.layer;
+                            layer.msg(data, {
+                                icon: 2,
+                                time: 1500,
+                                end: $("#captchaPic").click()
+                            });
+                        });
+                        error.innerHTML = data;
+                    }
+                }
+            )
+        })
+    })
+</script>
+</body>
+</html>

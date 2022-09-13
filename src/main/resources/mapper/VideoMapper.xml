@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xupt.ttms.mapper.VideoMapper">
+    <resultMap id="BaseResultMap" type="com.xupt.ttms.pojo.Video">
+        <id column="id" property="id"></id>
+        <result column="m_id" property="mId"></result>
+        <result column="v_src" property="vSrc"></result>
+        <result column="i_src" property="mSrc"></result>
+        <result column="len" property="len"></result>
+        <result column="des" property="desc"></result>
+    </resultMap>
+
+    <insert id="insertVideo" useGeneratedKeys="true" keyProperty="id">
+        insert into video (id, m_id, v_src, i_src, len)
+        values (null, #{video.mId}, #{video.vSrc}, #{video.mSrc}, #{video.len})
+    </insert>
+
+    <update id="updateVideo">
+        update video
+        set i_src = #{video.mSrc}
+        where id = #{video.id}
+    </update>
+
+    <update id="updateVideoDesc">
+        update video
+        set des = #{desc}
+        where id = #{id}
+    </update>
+
+    <select id="getVideoByPrimaryKey" resultMap="BaseResultMap">
+        select *
+        from video
+        where id = #{id};
+    </select>
+    <select id="getVideoByMId" resultMap="BaseResultMap">
+        select * from video
+        where m_id=#{mId}
+        <if test="id != null">
+            order by id=#{id}
+        </if>
+        ;
+    </select>
+    <select id="getVideoById" resultMap="BaseResultMap">
+        select * from video
+        where id=#{id};
+    </select>
+</mapper>

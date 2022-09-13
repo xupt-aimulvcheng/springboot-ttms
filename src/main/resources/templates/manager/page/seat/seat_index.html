@@ -1,0 +1,537 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>汉唐剧院管理系统-选座订票</title>
+    <link rel="stylesheet" th:href="@{/main/css/font-awesome.min.css}"/>
+    <link rel="stylesheet" th:href="@{/main/css/slick.css}"/>
+    <link rel="stylesheet" th:href="@{/main/css/slicknav.css}"/>
+    <link rel="stylesheet" th:href="@{/main/css/animate.css}"/>
+    <link rel="stylesheet" th:href="@{/main/css/bootstrap.css}"/>
+    <link rel="stylesheet" th:href="@{/main/css/theme.css}"/>
+    <link rel="stylesheet" th:href="@{/main/css/seats.css}"/>
+    <script th:src=" @{/main/js/axios.min.js}"></script>
+    <style>
+        .demo {
+            width: 800px;
+            margin: 40px auto 0 20px;
+            min-height: 450px;
+        }
+
+        @media screen and (max-width: 360px) {
+            .demo {
+                width: 340px
+            }
+        }
+
+        .front {
+            width: 200px;
+            margin: 5px 32px 45px 60px;
+            background-color: #f0f0f0;
+            color: #666;
+            text-align: center;
+            padding: 3px;
+            border-radius: 5px;
+        }
+
+        .booking-details {
+            margin-top: 35px;
+            float: right;
+            position: relative;
+            width: 220px;
+            height: 450px;
+        }
+
+        .booking-details h3 {
+            margin: 5px 5px 0 0;
+            font-size: 16px;
+        }
+
+        .booking-details p {
+            line-height: 26px;
+            font-size: 16px;
+            color: #999
+        }
+
+        .booking-details p span {
+            color: #666
+        }
+
+        div.seatCharts-cell {
+            color: #182C4E;
+            height: 25px;
+            width: 25px;
+            line-height: 25px;
+            margin: 3px;
+            float: left;
+            text-align: center;
+            outline: none;
+            font-size: 13px;
+        }
+
+        div.seatCharts-seat {
+            color: #fff;
+            cursor: pointer;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+        }
+
+        div.seatCharts-row {
+            height: 35px;
+        }
+
+        div.seatCharts-seat.available {
+            background-color: #B9DEA0;
+        }
+
+        div.seatCharts-seat.available0 {
+            background-color: #B9DEA0;
+            /*background-color: #472B34;*/
+        }
+
+        div.seatCharts-seat.focused {
+            background-color: #76B474;
+            border: none;
+        }
+
+        div.seatCharts-seat.selected {
+            background-color: #B9DEA0;
+        }
+
+        div.seatCharts-seat.unavailable {
+            background-color: #472B34;
+            /*cursor: not-allowed;*/
+        }
+
+        div.seatCharts-seat.unavailable0 {
+            background-color: #472B34;
+            /*cursor: not-allowed;*/
+        }
+
+        div.seatCharts-container {
+            border-right: 1px dotted #adadad;
+            width: 550px;
+            padding: 20px;
+            float: left;
+        }
+
+        div.seatCharts-legend {
+            padding-left: 0px;
+            position: absolute;
+            bottom: 16px;
+        }
+
+        ul.seatCharts-legendList {
+            padding-left: 0px;
+        }
+
+        .seatCharts-legendItem {
+            float: left;
+            width: 90px;
+            margin-top: 10px;
+            line-height: 2;
+        }
+
+        span.seatCharts-legendDescription {
+            margin-left: 5px;
+            line-height: 30px;
+        }
+
+        .checkout-button {
+            display: block;
+            width: 80px;
+            height: 24px;
+            line-height: 20px;
+            margin: 10px auto;
+            border: 1px solid #999;
+            font-size: 14px;
+            cursor: pointer
+        }
+
+        #selected-seats {
+            max-height: 200px;
+            overflow-y: auto;
+            /*overflow-x: none;*/
+            width: 200px;
+        }
+
+        #selected-seats li {
+            float: left;
+            width: 72px;
+            height: 28px;
+            line-height: 28px;
+            border: 1px solid #d3d3d3;
+            background: #5cb85c;
+            margin: 6px;
+            font-size: 14px;
+            text-align: center;
+            color: white
+        }
+    </style>
+</head>
+<body class="contact-template">
+<input type="hidden" th:value="${id}" id="hId">
+<div class="main-page clearfix">
+    <div class="container">
+        <div class="row">
+            <!--座位布局-->
+            <div id="main">
+                <h2 class="top_title">在线选座订座</h2>
+                <div class="demo">
+                    <div id="seat-map">
+                        <div class="front">银幕中央</div>
+                    </div>
+                    <div class="booking-details">
+                        <p>演出厅：<span id="studioname">VIP厅</span></p>
+                        <p>已选座位：</p>
+                        <ul id="selected-seats"></ul>
+                        <br>
+                        <div style="line-height: 26px;
+    font-size: 16px;
+    color: #999;">已损坏
+                        </div>
+                        <div style="background-color: #472B34;height: 25px;
+    width: 25px;
+    line-height: 25px;
+    margin: 3px;
+    text-align: center;
+    outline: none;"></div>
+                        <br>
+                        <div style="line-height: 26px;
+    font-size: 16px;
+    color: #999;">完好
+                        </div>
+                        <div style="background-color: #76B474;height: 25px;
+    width: 25px;
+    line-height: 25px;
+    margin: 3px;
+    float: left;
+    text-align: center;
+    outline: none;"></div>
+                        <div style="background-color: #B9DEA0;height: 25px;
+    width: 25px;
+    line-height: 25px;
+    margin: 3px;
+    float: left;
+    text-align: center;
+    outline: none;"></div>
+                        <br>
+                        <br><br>
+                        <button type="button" class="btn btn-danger" style="margin-left: 80px;" id="submit">修改</button>
+                    </div>
+                    <div style="clear: both"></div>
+                </div>
+                <br/>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="#top" id="scroll-top"><i class="fa fa-angle-up"></i></a>
+<script th:src="@{/main/js/jquery-2.1.3.min.js}"></script>
+<script th:src="@{/main/js/jquery-ui.min.js}"></script>
+<script th:src="@{/main/js/jquery.form.min.js}"></script>
+<script th:src="@{/main/js/jquery.validate.min.js}"></script>
+<script th:src="@{/main/js/axios.min.js}"></script>
+<script th:src="@{/main/js/seat.js}"></script>
+<script th:src="@{/main/layuimini/lib/layui-v2.6.3/layui.js}" charset="utf-8"></script>
+<script type="text/javascript">
+    var seatStr = [];
+
+    //获取完好的座位的id
+    function getString(row, col, json) {
+        var seatArr = [];
+        var badArray = [];
+        var str = "";
+        var badStr = "";
+        for (var i = 1; i <= row; i++) {
+            for (var j = 1; j <= col; j++) {
+                for (var k = 0; k < json.length; k++) {
+                    if (json[k].status == 1 && json[k].row == i && json[k].col == j) {
+                        str += "a";
+                    } else if (json[k].status == 2 && json[k].row == i && json[k].col == j) {
+                        str += "b";
+                    } else if (json[k].status == 0 && json[k].row == i && json[k].col == j) {
+                        badStr += "'" + i + "_" + j + "'";
+                        badArray.push(badStr);
+                        badStr = "";
+                        str += "a";
+                    }
+                }
+            }
+            seatArr.push(str);
+            str = "";
+        }
+        return seatArr;
+    }
+
+    let hId=$("#hId").val();
+
+    //获取损坏的座位的id
+    function getBadString(row, col, json) {
+        var seatArr = [];
+        var badArray = [];
+        var str = "";
+        var badStr = "";
+        for (var i = 1; i <= row; i++) {
+            for (var j = 1; j <= col; j++) {
+                for (var k = 0; k < json.length; k++) {
+                    if (json[k].status == 1 && json[k].row == i && json[k].col == j) {
+                        str += "a";
+                    } else if (json[k].status == 2 && json[k].row == i && json[k].col == j) {
+                        str += "b";
+                    } else if (json[k].status == 0 && json[k].row == i && json[k].col == j) {
+                        str += "a";
+                        badStr += i + "_" + j;
+                        badArray.push(badStr);
+                        badStr = "";
+                    }
+                }
+            }
+            seatArr.push(str);
+            if (badStr.length > 0) {
+                badArray.push(badStr);
+            }
+            badStr = "";
+            str = "";
+        }
+        return badArray;
+    }
+
+    function getQueryVariable(key) {
+        var url = location.search;
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        var value = (theRequest[key] == null || theRequest[key] == undefined) ? null : theRequest[key];
+        return value;
+    }
+
+    $(function () {
+        axios.post(
+            "/seat/getSeats",
+            'id='+hId
+        ).then(function (response) {
+            var json = response.data;
+            var len = json.length;
+            var rowSet = new Array(len);
+            var colSet = new Array(len);
+            for (var i = 0; i < len; i++) {
+                rowSet.push(json[i].row);
+                colSet.push(json[i].col);
+            }
+            var rowlen = rowSet.pop();
+            var collen = colSet.pop();
+            seatStr = getString(rowlen, collen, json);
+            var badArr = getBadString(rowlen, collen, json);
+            createSeat(seatStr, badArr, rowlen, collen);
+        })
+    })
+    // 根据".._.."的格式获取前面的行数
+
+    // 此处为示例，具体请自行完成
+    var price = 35; //票价
+    function createSeat(seatStr, badArr, row, col) {
+        //模拟座位为一个二维数组，每点击一次二维数组的值加1来判断对于选定区域是否去除
+        var num = new Array(row + 1);
+        for (var i = 0; i < num.length; i++) {
+            num[i] = new Array(col + 1).fill(0);
+        }
+        $(document).ready(function () {
+            var $cart = $('#selected-seats'), //座位区
+                $counter = $('#counter'), //票数
+                $total = $('#total'); //总计金额
+            var sc = $('#seat-map').seatCharts({
+                //座位图
+                map: seatStr,
+                naming: {
+                    top: false,
+                    getLabel: function (character, row, column) {
+                        return column;
+                    }
+                },
+                legend: { //定义图例
+                    node: $('#legend'),
+                    items: [
+                        ['a', 'available', '可选座'],
+                        ['b', 'unavailable', '已损坏']
+                    ]
+                },
+                click: function () { //点击事件
+                    var str = "";
+                    var id = '#' + this.node().attr('id');
+                    num[this.settings.row][this.settings.label - 1]++;
+                    if (num[this.settings.row][this.settings.label - 1] % 2 == 0) {
+                        //更新数量
+                        $counter.text(sc.find(str).length - 1);
+                        //更新总计
+                        $total.text(recalculateTotal(sc) - price);
+                        //删除已预订座位
+                        $('#cart-item-' + this.settings.id).remove();
+                    } else if (num[this.settings.row][this.settings.label - 1] % 2 != 0) {
+                        if ($(id).css('background-color') == "rgb(71, 43, 52)") {
+                            // 座位已损坏要修改为完好
+                            //1代表完好，0代表损坏，2代表已购买
+                            $('<li>' + (this.settings.row + 1) + '排' + this.settings.label + '座</li>')
+                                .attr('id', 'cart-item-' + this.settings.id)
+                                .attr('row', this.settings.row + 1)
+                                .attr('selected', 'true')
+                                .attr('col', this.settings.label)
+                                .attr("seat_status", "1")
+                                .data('seatId', this.settings.id)
+                                .appendTo($cart);
+                        } else {
+                            // 座位完好要修改为已损坏
+                            $('<li>' + (this.settings.row + 1) + '排' + this.settings.label + '座</li>')
+                                .attr('id', 'cart-item-' + this.settings.id)
+                                .attr('row', this.settings.row + 1)
+                                .attr('selected', 'true')
+                                .attr('col', this.settings.label)
+                                .attr("seat_status", "0")
+                                .data('seatId', this.settings.id)
+                                .appendTo($cart);
+                        }
+                        $counter.text(sc.find('selected').length + 1);
+                        $total.text(recalculateTotal(sc) + price);
+                    }
+                    if (this.status() == 'available') {
+                        str += "";
+                        str += "unavailable"
+                        $(id).css('background-color', 'rgb(71, 43, 52)');
+                        return str;
+                    }
+                    if (this.status() == 'unavailable') {
+                        str += "";
+                        str += "available"
+                        $(id).css('background-color', 'rgb(118, 180, 116)');
+                        return str;
+                    }
+                }
+            });
+            layui.use(['form'], function () {
+                var form = layui.form,
+                    layer = layui.layer,
+                    $ = layui.$;
+                function hintError(data) {
+                    layer.msg(data, {
+                        icon: 5,
+                        time: 1000,
+                        end: function () {
+                            $("#submit").removeAttr("disabled", "disabled").removeClass("layui-btn-disabled");
+                            form.val("formTest", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                                "hName": "", // "name": "value"
+                            });
+                        }
+                    });
+                    return false;
+                }
+                function hint(data) {
+                    layer.msg(data, {
+                        icon: 1,
+                        time: 1000,
+                        end: function () {
+                            parent.refresh();//刷新到表格
+                            // 关闭弹出层
+                            var iframeIndex = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(iframeIndex);
+                        }
+                    });
+                    return false;
+                }
+                $("#submit").click(function () {
+                    $("#submit").attr("disabled", "disabled").addClass("layui-btn-disabled");
+                    var data = JSON.stringify(getSeat());
+                    var url = '/seat/updateSeats';
+                    axios({
+                        // 请求方法
+                        method: 'POST',
+                        // url
+                        url: url,
+                        headers: {
+                            'Content-Type': "application/json;charset=UTF-8"
+                        },
+                        // url参数
+                        // 请求体参数
+                        data: data
+                    }).then(response=>{
+                        var data = response.data;
+                        if (data == "修改失败")
+                            hintError(data);
+                        else
+                            hint(data);
+                    })
+                })
+            });
+
+            //已售出的座位
+
+            // sc.get(badArr).node().css({'background-color': '#472B34'});
+            sc.status(badArr, "unavailable");
+        })
+    }
+
+    //计算总金额
+    function recalculateTotal(sc) {
+        var total = 0;
+        sc.find('selected').each(function () {
+            total += price;
+        });
+        return total;
+    }
+
+    //对数组对象去重
+    function deduplicate(arr3) {
+        let data = [];
+        arr3.forEach(item => {
+            if (data.length == 0) {
+                data.push(item);
+            } else {
+                let isDiff = true;//是否不同
+                for (let i = 0; i < data.length; i++) {
+                    let dataItem = data[i];
+                    if (dataItem.row == item.row && dataItem.col == item.col && dataItem.status == item.status && dataItem.studioId == item.studioId) {
+                        /*集合中已经存在相同数据*/
+                        isDiff = false;
+                        break;
+                    }
+                }
+                if (isDiff) {
+                    data.push(item);
+                }
+            }
+        });
+        return data
+    }
+
+    //获取所有选中的节点
+    function getSeat() {
+        var jsonArr = [];
+        var nodes = $("#selected-seats").children("li");//所有选中的节点
+        nodes.each(function (index, node) {
+            for (var i = 0; i <= index; i++) {
+                var row = $(node).attr("row");
+                var col = $(node).attr("col");
+                var status = $(node).attr("seat_status");
+                var json = {
+                    "row": row,
+                    "col": col,
+                    "status": status,
+                    "studioId": hId
+                };
+                jsonArr.push(json);
+            }
+        })
+        return deduplicate(jsonArr);
+    }
+
+</script>
+</body>
+</html>

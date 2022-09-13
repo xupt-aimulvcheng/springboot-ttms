@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script th:src="@{/main/layuimini/lib/layui-v2.6.3/layui.js}" charset="utf-8"></script>
+    <script th:src="@{/main/js/jquery-2.1.3.min.js}" charset="utf-8"></script>
+    <link rel="stylesheet" th:href="@{/main/layuimini/lib/layui-v2.6.3/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/main/layuimini/css/public.css}" media="all">
+    <script th:src=" @{/main/js/axios.min.js}"></script>
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layuimini-form" lay-filter="formTest">
+    <input type="hidden" th:value="${plan.id}">
+    <div class="layui-form-item">
+        <label class="layui-form-label required">演出厅名称</label>
+        <div class="layui-input-block">
+            <input type="text" th:value="${plan.hName}" id="hName" name="hName" lay-verify="required|name" lay-reqtext="演出厅名不能为空"
+                   placeholder="请输入演出厅名称" value=""
+                   class="layui-input">
+        </div>
+    </div>
+    <input type="hidden" th:value="${plan.mId}" name="mId">
+    <div class="layui-form-item">
+        <label class="layui-form-label required">演出计划名称</label>
+        <div class="layui-input-block">
+            <input type="text" th:value="${plan.pName}" id="pName" name="pName" lay-verify="required|name" lay-reqtext="演出计划名不能为空"
+                   placeholder="请输入演出计划名称" value=""
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">开始时间</label>
+        <div class="layui-input-inline">
+            <input type="text" th:value="${plan.startDate}" name="startDate" class="layui-input" id="test5" placeholder="yyyy-MM-dd HH:mm:ss">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" id="submit" lay-submit lay-filter="saveBtn">立即提交</button>
+        </div>
+    </div>
+</div>
+<script>
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg); //匹配目标参数
+        if (r != null) {
+            return decodeURIComponent(r[2]);
+//这里为什么是从第三个字符解析呢？不知道这样理解对不对，因为路径后面的参数形式为参数名=参数值，而第一个字符为参数名，第二个为=，第三个就为参数值了。。。因为下面调用的时候得出的就是参数值
+        }
+        return null;//返回参数值
+    }
+
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#test5'
+            , type: 'datetime'
+        });
+    });
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+        form.val("formTest", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+            "mId": getUrlParam("mID"), // "name": "value"
+        });
+        form.verify({
+            name:[
+                /^[\u4e00-\u9fa5]{3,8}[0-9]{0,3}$/,
+                '至少有三个汉字且数字最多为3个只能在结尾'
+            ]
+        })
+        //监听提交
+        function hint(data) {
+            layer.msg(data, {
+                icon: 1,
+                time: 1000,
+                end: function () {
+                    parent.refresh();//刷新到表格
+                    // 关闭弹出层
+                    var iframeIndex = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(iframeIndex);
+                }
+            });
+            return false;
+        }
+
+        function hinterrormName(data) {
+            layer.msg(data, {
+                icon: 5,
+                time: 1000,
+                end: function () {
+                    $("#submit").removeAttr("disabled", "disabled").removeClass("layui-btn-disabled");
+                    form.val("formTest", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                        "hName": "", // "name": "value"
+                    });
+                }
+            });
+            return false;
+        }
+
+        function hinterrorpName(data) {
+            layer.msg(data, {
+                icon: 5,
+                time: 1000,
+                end: function () {
+                    $("#submit").removeAttr("disabled", "disabled").removeClass("layui-btn-disabled");
+                    form.val("formTest", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                        "pName": "", // "name": "value"
+                    });
+                }
+            });
+            return false;
+        }
+        function hinterrorStartDate(data) {
+            layer.msg(data, {
+                icon: 5,
+                time: 1000,
+                end: function () {
+                    $("#submit").removeAttr("disabled", "disabled").removeClass("layui-btn-disabled");
+                    form.val("formTest", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                        "startDate": "", // "name": "value"
+                    });
+                }
+            });
+            return false;
+        }
+
+        form.on('submit(saveBtn)', function (data) {
+            $("#submit").attr("disabled", "disabled").addClass("layui-btn-disabled");
+            axios.post(
+                '/plan/updatePlan',
+                data.field
+            ).then(function (response) {
+                var data = response.data;
+                if (data == "抱歉，无该演出厅,请输入正确的数据")
+                    hinterrormName(data);
+                else if (data == "抱歉，该演出计划已存在,请输入正确的数据")
+                    hinterrorpName(data);
+                else if (data == "抱歉，设置的时间已有演出计划,请输入正确的数据")
+                    hinterrorStartDate(data);
+                else
+                    hint(data);
+            })
+            return false;
+        })
+    });
+</script>
+</body>
+</html>
