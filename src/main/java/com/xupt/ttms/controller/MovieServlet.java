@@ -11,6 +11,7 @@ import com.xupt.ttms.pojo.Movie;
 import com.xupt.ttms.pojo.Result;
 import com.xupt.ttms.service.MovieService;
 import com.xupt.ttms.util.ToResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+
+@Slf4j
 @Controller
 public class MovieServlet {
     @Autowired
@@ -104,16 +107,18 @@ public class MovieServlet {
 
     @RequestMapping(value = "/movie/addMovie", method = RequestMethod.POST)
     @ResponseBody
-    public String addMovie(MultipartFile photo, HttpSession session,String mName, String mType, Integer mLength,
-                           Double mPrice, String mDate, String mDirector, String mActor, Double mBoxOffice,
-                           Double mScore, String mIntroduction, String mImage, String status) throws IOException {
+    public String addMovie(@RequestParam("file") MultipartFile photo, HttpSession session,@RequestParam("mName") String mName,
+                           @RequestParam("mType") String mType, @RequestParam("mLength") Integer mLength,
+                           @RequestParam("mPrice") Double mPrice,@RequestParam("mDate") String mDate,
+                           @RequestParam("mDirector") String mDirector,@RequestParam("mActor") String mActor, Double mBoxOffice,
+                           Double mScore,@RequestParam("mIntroduction") String mIntroduction, String mImage, @RequestParam("status") String status) throws IOException {
         String fileName = photo.getOriginalFilename();
         //处理文件重名问题
         String hzName = fileName.substring(fileName.lastIndexOf("."));
         fileName = UUID.randomUUID().toString() + hzName;
         //获取服务器中photo目录的路径
         ServletContext servletContext = session.getServletContext();
-        String photoPath = servletContext.getRealPath("static/main/images/movie");
+        String photoPath = "D:\\idea-project\\ttms\\target\\classes\\static\\main\\images\\movie";
         File file = new File(photoPath);
         if (!file.exists()) {
             file.mkdir();
@@ -121,6 +126,8 @@ public class MovieServlet {
         String finalPath = photoPath + File.separator + fileName;
         String url="../../main/images/movie/"+fileName;
         //实现上传功能
+        log.info("封面文件的绝对路径为"+finalPath);
+        log.info("数据库存储的的路径为"+url);
         photo.transferTo(new File(finalPath));
         Movie movie = new Movie(mName,mType,mLength,mPrice,mDate,mDirector,mActor,mBoxOffice,mScore,mIntroduction,url,status);
         System.out.println(movie);
