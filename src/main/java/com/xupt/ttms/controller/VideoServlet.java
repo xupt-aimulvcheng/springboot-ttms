@@ -42,13 +42,13 @@ public class VideoServlet {
         fileName = UUID.randomUUID().toString() + hzName;
         //获取服务器中photo目录的路径
         ServletContext servletContext = session.getServletContext();
-        String photoPath = servletContext.getRealPath("static/video/video");
+        String photoPath = "D:\\idea-project\\ttms\\target\\classes\\static\\main\\video\\video";
         File file = new File(photoPath);
         if (!file.exists()) {
             file.mkdir();
         }
         String finalPath = photoPath + File.separator + fileName;
-        String url = "../../../static/video/video/" + fileName;
+        String url = "../../main/video/video/" + fileName;
         File file1 = new File(finalPath);
         //实现上传功能
         photo.transferTo(file1);
@@ -69,13 +69,13 @@ public class VideoServlet {
         fileName = UUID.randomUUID().toString() + hzName;
         //获取服务器中photo目录的路径
         ServletContext servletContext = session.getServletContext();
-        String photoPath = servletContext.getRealPath("static/video/img");
+        String photoPath = "D:\\idea-project\\ttms\\target\\classes\\static\\main\\video\\img";
         File file = new File(photoPath);
         if (!file.exists()) {
             file.mkdir();
         }
         String finalPath = photoPath + File.separator + fileName;
-        String url = "../../../static/video/img/" + fileName;
+        String url = "../../main/video/img/" + fileName;
         this.video.setmId(m_id);
         this.video.setId(id);
         this.video.setmSrc(url);
