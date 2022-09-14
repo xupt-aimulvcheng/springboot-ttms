@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -139,7 +140,7 @@ public class PlanServiceImpl implements PlanService {
         return planMapper.getMovieIDByName(name);
     }
 
-    public Double getPriceBymId(Integer mId) {
+    public BigDecimal getPriceBymId(Integer mId) {
         return planMapper.getPriceBymId(mId);
     }
 

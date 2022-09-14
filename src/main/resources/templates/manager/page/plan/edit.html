@@ -19,16 +19,15 @@
 </head>
 <body>
 <div class="layui-form layuimini-form" lay-filter="formTest">
-    <input type="hidden" th:value="${plan.id}">
+    <input type="hidden" th:value="${plan.id}" name="id">
     <div class="layui-form-item">
         <label class="layui-form-label required">演出厅名称</label>
         <div class="layui-input-block">
-            <input type="text" th:value="${plan.hName}" id="hName" name="hName" lay-verify="required|name" lay-reqtext="演出厅名不能为空"
+            <input type="text" th:value="${plan.hName}" id="hName" name="hName" lay-verify="required" lay-reqtext="演出厅名不能为空"
                    placeholder="请输入演出厅名称" value=""
                    class="layui-input">
         </div>
     </div>
-    <input type="hidden" th:value="${plan.mId}" name="mId">
     <div class="layui-form-item">
         <label class="layui-form-label required">演出计划名称</label>
         <div class="layui-input-block">
@@ -44,12 +43,18 @@
         </div>
     </div>
     <div class="layui-form-item">
+        <label class="layui-form-label">价格</label>
+        <div class="layui-input-inline">
+            <input type="text" th:value="${plan.price}" lay-verify="required|money" name="price" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
         <div class="layui-input-block">
             <button class="layui-btn layui-btn-normal" id="submit" lay-submit lay-filter="saveBtn">立即提交</button>
         </div>
     </div>
 </div>
-<script>
+<script th:inline="javascript">
     function getUrlParam(name) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
         var r = window.location.search.substr(1).match(reg); //匹配目标参数
@@ -59,6 +64,7 @@
         }
         return null;//返回参数值
     }
+    var mId = [[${plan.mId}]];
 
     layui.use('laydate', function () {
         var laydate = layui.laydate;
@@ -78,7 +84,11 @@
             name:[
                 /^[\u4e00-\u9fa5]{3,8}[0-9]{0,3}$/,
                 '至少有三个汉字且数字最多为3个只能在结尾'
-            ]
+            ],
+            money: [
+                /^([0-9]+|[0-9]{1,3}(,[0-9]{3})*)(.[0-9]{1,2})?$/,
+                '请输入正确的金额'
+            ],
         })
         //监听提交
         function hint(data) {
@@ -137,10 +147,13 @@
         }
 
         form.on('submit(saveBtn)', function (data) {
+            var json = data.field;
+            json.mId=mId;
             $("#submit").attr("disabled", "disabled").addClass("layui-btn-disabled");
+            console.log(json)
             axios.post(
                 '/plan/updatePlan',
-                data.field
+                json
             ).then(function (response) {
                 var data = response.data;
                 if (data == "抱歉，无该演出厅,请输入正确的数据")
@@ -152,6 +165,7 @@
                 else
                     hint(data);
             })
+            console.log(json)
             return false;
         })
     });

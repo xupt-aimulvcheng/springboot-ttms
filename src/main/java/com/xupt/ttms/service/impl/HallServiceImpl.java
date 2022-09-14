@@ -65,6 +65,7 @@ public class HallServiceImpl implements HallService {
         return pageInfo;
     }
 
+
     /**
      * 根据演出厅名模糊查询
      *

@@ -5,12 +5,13 @@ import com.xupt.ttms.pojo.Plan;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 @Mapper
 public interface PlanMapper {
     int deletePlanByIds(@Param("ids") String ids);
 
-    int updatePlan(Plan plan, @Param("ids") int id);
+    int updatePlan(@Param("plan") Plan plan, @Param("ids") int id);
 
     int insert(@Param("plan") Plan plan);
 
@@ -22,7 +23,7 @@ public interface PlanMapper {
 
     int getMovieIDByName(@Param("name") String name);
 
-    Double getPriceBymId(@Param("mId") Integer mId);
+    BigDecimal getPriceBymId(@Param("mId") Integer mId);
 
     List<Plan> getPlanByName(@Param("name") String pName);
 

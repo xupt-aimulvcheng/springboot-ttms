@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 @Mapper
 public interface SeatMapper {
-    public List<Seat> getSeatList(@Param("studioId") Integer studyId);
+    public List<Seat> getSeatList(@Param("studioId") Integer studioId);
 
     int updateSeats(@Param("seats") List<Seat> seats);
     //查询所有要修改的座位的id

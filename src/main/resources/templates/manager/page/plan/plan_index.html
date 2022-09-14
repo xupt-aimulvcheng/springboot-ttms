@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html  xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <title>layui</title>
@@ -55,7 +55,9 @@
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
                 <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加</button>
-                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除</button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除
+                </button>
+                <button class="layui-btn layui-btn-sm layui-btn-warm" lay-event="online"> 上线计划</button>
             </div>
         </script>
 
@@ -69,16 +71,17 @@
     </div>
 </div>
 <script th:src=" @{/main/js/axios.min.js}"></script>
-<script type="text/javascript"  th:inline="none">
+<script type="text/javascript" th:inline="none">
     function getUrlParam(name) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
         var r = window.location.search.substr(1).match(reg); //匹配目标参数
-        if(r != null){
+        if (r != null) {
             return decodeURIComponent(r[2]);
 //这里为什么是从第三个字符解析呢？不知道这样理解对不对，因为路径后面的参数形式为参数名=参数值，而第一个字符为参数名，第二个为=，第三个就为参数值了。。。因为下面调用的时候得出的就是参数值
         }
         return null;//返回参数值
     }
+
     layui.use('laydate', function () {
         var laydate = layui.laydate;
         //执行一个laydate实例
@@ -99,7 +102,7 @@
             table = layui.table;
         table.render({
             elem: '#currentTableId',
-            url: '/plan/getAllPlan?id='+getUrlParam('id'),
+            url: '/plan/getAllPlan?id=' + getUrlParam('id'),
             toolbar: '#toolbarDemo',
             defaultToolbar: ['filter', 'exports', 'print', {
                 title: '电影列表',
@@ -154,7 +157,7 @@
                     maxmin: true,
                     shadeClose: true,
                     area: ['100%', '100%'],
-                    content: '/plan/add?mID='+getUrlParam("id"),
+                    content: '/plan/add?mID=' + getUrlParam("id"),
                 });
                 $(window).on("resize", function () {
                     layer.full(index);
@@ -171,12 +174,11 @@
                     for (var i = 0; i < data.length; i++) {
                         Arrid.push(data[i].id);
                     }
-
                     var ids = Arrid.join(",");
-                    var url='/plan/delete/'+ids;
+                    var url = '/plan/delete/' + ids;
                     axios.post(
                         url,
-                    ).then(function (response){
+                    ).then(function (response) {
                         var data = response.data;
                         console.log(data);
                         layer.msg(response.data, {
@@ -185,11 +187,18 @@
                         })
                         refresh();
                     })
-                    /*$.post('/plan/delete/'+ids, function (response) {
-                        console.log(response);
-
-                    })*/
                 })
+            } else if (obj.event === 'online') {
+                var checkStatus = table.checkStatus('currentTableId')
+                    , data = checkStatus.data;
+                if (data.length == 0) {
+                    layer.alert("您没有选中任何数据", {icon: 2, anim: 6, title: "警告"});
+                    return false;
+                }
+                axios.post('/ticket/insertTicket',data).then(function (res) {
+                    var data = res.data;
+                })
+                console.log(checkStatus.data)
             }
         });
 

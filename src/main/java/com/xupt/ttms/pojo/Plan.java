@@ -3,6 +3,8 @@ package com.xupt.ttms.pojo;
 
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 @Component
 public class Plan {
     private Integer id;
@@ -30,11 +32,11 @@ public class Plan {
     private String pName;
     private String startDate;
 
-    public Double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -54,7 +56,7 @@ public class Plan {
                 '}';
     }
 
-    public Plan(Integer id, String mName, String hName, Integer mId, Integer hId, String pName, String startDate, String endDate, Double price, String address) {
+    public Plan(Integer id, String mName, String hName, Integer mId, Integer hId, String pName, String startDate, String endDate, BigDecimal price, String address) {
         this.id = id;
         this.mName = mName;
         this.hName = hName;
@@ -66,7 +68,7 @@ public class Plan {
         this.price = price;
     }
 
-    public Plan(Integer id, String mName, String hName, Integer mId, Integer hId, String pName, String startDate, String endDate, Double price) {
+    public Plan(Integer id, String mName, String hName, Integer mId, Integer hId, String pName, String startDate, String endDate, BigDecimal price) {
         this.id = id;
         this.mName = mName;
         this.hName = hName;
@@ -79,7 +81,7 @@ public class Plan {
     }
 
     private String endDate;
-    private Double price;
+    private BigDecimal price;
 
     public Integer getId() {
         return id;
@@ -132,12 +134,15 @@ public class Plan {
     public Plan() {
     }
 
-    public Plan(Integer id, Integer mId, Integer hId, String pName, String startDate, String endDate) {
+    public Plan(Integer id, Integer mId, Integer hId, String pName, String startDate, String endDate,String mName,String hName,BigDecimal price) {
         this.id = id;
         this.mId = mId;
         this.hId = hId;
         this.pName = pName;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.mName=mName;
+        this.hName=hName;
+        this.price=price;
     }
 }

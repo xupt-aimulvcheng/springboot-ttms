@@ -43,15 +43,7 @@ public class PlanServlet {
     @RequestMapping(value = "/plan/updatePlan", method = RequestMethod.POST)
     @ResponseBody
     public String updatePlan(@RequestBody Plan plan) {
-        //不在已有的时间内
-        if (planService.belongCalendar(plan.getStartDate(), String.valueOf(plan.getmId()),plan.gethName())){
-            return "抱歉，设置的时间已有演出计划,请输入正确的数据";
-        }
-        if (planService.getHallIDByName(plan.gethName()) == null)
-            return "抱歉，无该演出厅,请输入正确的数据";
-        if (!planService.getPlanByName(plan.getpName()).isEmpty())
-            return "抱歉，该演出计划已存在,请输入正确的数据";
-        plan.setPrice(planService.getPriceBymId(plan.getmId()));
+        System.out.println(plan);
         plan.setEndDate(planService.getEndTime(String.valueOf(plan.getmId()), plan.getStartDate()));
         plan.sethId(planService.getHallIDByName(plan.gethName()));
         return (planService.updatePlan(plan) > 0 ? "修改成功" : "修改失败");
@@ -68,7 +60,7 @@ public class PlanServlet {
     @ResponseBody
     public String addPlan(@RequestBody Plan plan) {
         System.out.println(plan.gethName());
-        //不在已有的时间内
+        //在已有的时间内
         if (planService.belongCalendar(plan.getStartDate(), String.valueOf(plan.getmId()),plan.gethName())){
             return "抱歉，设置的时间已有演出计划,请输入正确的数据";
         }

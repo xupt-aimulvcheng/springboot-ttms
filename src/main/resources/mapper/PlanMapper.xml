@@ -12,7 +12,7 @@
         <result property="endDate" column="p_endTime" javaType="String"></result>
         <result property="mName" column="m_name"></result>
         <result property="hName" column="h_name"></result>
-        <result property="price" column="price"></result>
+        <result property="price" column="price" javaType="java.math.BigDecimal"></result>
         <!--        <association property="hName" -->
     </resultMap>
     <insert id="insert">
@@ -21,26 +21,25 @@
     </insert>
     <update id="updatePlan">
         update plan
-        <where>
-            <if test="plan.p_name!=''">
-                and set p_name = plan.p_name
+        <set>
+            <if test="plan.pName!=null">
+                p_name = #{plan.pName},
             </if>
-            <if test="plan.mName!=''">
-                and set m_id = (select id from movie where m_name = plan.mName)
+            <if test="plan.hName!=null">
+                h_id = (select id from hall where h_name = #{plan.hName}),
             </if>
-            <if test="plan.hName!=''">
-                and set h_id = (select id from hall where h_name = plan.hName)
-            </if>
-            <if test="plan.startDate!=''">
-                and set p_startTime = plan.startDate
+            <if test="plan.startDate!=null">
+                p_startTime = #{plan.startDate},
             </if>
             <if test="plan.endDate!=''">
-                and set p_endTime = plan.endDate
+                p_endTime = #{plan.endDate},
             </if>
-            where id = plan.id
-        </where>
+            <if test="plan.price!=null">
+                price = #{plan.price}
+            </if>
+        </set>
+        where id = #{plan.id}
     </update>
-
     <delete id="deletePlanByIds">
         delete
         from plan
@@ -52,9 +51,8 @@
         where id in (#{ids})
     </delete>
     <select id="getAllPlansBymID" resultMap="BaseResultMap">
-        select id,p_name,m_id,p_startTime,p_endTime,h_id,
+        select id,p_name,m_id,p_startTime,p_endTime,h_id,price,
         (select m_name from movie where id = #{mId}) as m_name,
-        (select m_price from movie where id = #{mId}) as price,
         (select h_name from hall where id in (select h_id from plan where m_id = #{mId})) as h_name
         from plan
         where m_id = #{mId}
@@ -84,7 +82,7 @@
         from movie
         where m_name = #{name};
     </select>
-    <select id="getPriceBymId" resultType="java.lang.Double">
+    <select id="getPriceBymId" resultType="java.math.BigDecimal">
         select m_price
         from movie
         where id = #{mId};
@@ -104,7 +102,8 @@
                p_startTime,
                p_name,
                m_id,
-               (select h_name from hall where id in (select h_id from plan where id = #{id})) as h_name
+               (select h_name from hall where id in (select h_id from plan where id = #{id})) as h_name,
+               price
         from plan
         where id = #{id};
     </select>

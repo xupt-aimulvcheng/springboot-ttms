@@ -16,7 +16,7 @@ public class LoginInterceptor implements HandlerInterceptor {
      * @return
      * @throws Exception
      */
-    @Override
+    /*@Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession();
         Object insider = session.getAttribute("user");
@@ -26,5 +26,5 @@ public class LoginInterceptor implements HandlerInterceptor {
         //未登录则跳转到登录界面
         response.sendRedirect("/");
         return false;
-    }
+    }*/
 }

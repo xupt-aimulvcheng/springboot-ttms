@@ -5,21 +5,19 @@ import com.xupt.ttms.pojo.Seat;
 import com.xupt.ttms.service.SeatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 @Service
+@Transactional
 public class SeatServiceImpl implements SeatService {
     @Autowired
-    private /*static*/ SeatMapper seatMapper;
+    private SeatMapper seatMapper;
 
-    /* {
-        SqlSession sqlSession = SqlSessionUtil.getSqlSession();
-        seatMapper = sqlSession.getMapper(SeatMapper.class);
-    }*/
 
     @Override
-    public List<Seat> getSeatList(Integer studyId) {
-        return seatMapper.getSeatList(studyId);
+    public List<Seat> getSeatList(Integer studioId) {
+        return seatMapper.getSeatList(studioId);
     }
 
     @Override

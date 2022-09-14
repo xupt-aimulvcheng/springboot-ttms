@@ -3,6 +3,7 @@ package com.xupt.ttms.service;
 import com.github.pagehelper.PageInfo;
 import com.xupt.ttms.pojo.Plan;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface PlanService {
@@ -13,7 +14,7 @@ public interface PlanService {
     public int deletePlanByIds(String ids);
     public Integer getHallIDByName(String name);
     public int getMovieIDByName(String name);
-    Double getPriceBymId(Integer id);
+    BigDecimal getPriceBymId(Integer id);
 
     List<Plan> getPlanByName(String pName);
     List<Plan> getPlanByhName(String hName);

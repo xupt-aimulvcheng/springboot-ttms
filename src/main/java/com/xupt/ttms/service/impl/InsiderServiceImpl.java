@@ -20,11 +20,6 @@ public class InsiderServiceImpl implements InsiderService {
     @Autowired
     private InsiderMapper insidermapper;
 
-    /*{
-        SqlSession sqlSession = SqlSessionUtil.getSqlSession();
-        insidermapper = sqlSession.getMapper(InsiderMapper.class);
-    }*/
-
     /**
      * 根据用户名和密码登录
      */

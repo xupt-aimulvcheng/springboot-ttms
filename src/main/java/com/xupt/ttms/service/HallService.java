@@ -15,4 +15,5 @@ public interface HallService {
     public int deleteHall(String ids);
 
     PageInfo<Hall> getAllHall(int parseInt, int parseInt1);
+
 }
