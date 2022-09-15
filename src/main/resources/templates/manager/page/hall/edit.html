@@ -100,6 +100,18 @@
             return false;
         }
 
+        function hint(data) {
+            layer.msg(data, {
+                icon: 1,
+                time: 1000,
+                end: function () {
+                    parent.refresh();//刷新到表格
+                    // 关闭弹出层
+                    var iframeIndex = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(iframeIndex);
+                }
+            })};
+
         //监听提交
         form.on('submit(saveBtn)', function (data) {
             $("#submit").attr("disabled", "disabled").addClass("layui-btn-disabled");

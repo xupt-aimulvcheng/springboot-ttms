@@ -10,11 +10,14 @@
         <result property="row" column="seat_row"></result>
         <result property="status" column="seat_status"></result>
         <result property="studioId" column="studio_id"></result>
+        <association property="hall" javaType="com.xupt.ttms.pojo.Hall">
+            <result property="hname" column="h_name"></result>
+        </association>
     </resultMap>
     <select id="getSeatList" resultMap="BaseResultMap">
-        select id, seat_column, seat_row, seat_status
-        from seat
-        where studio_id = #{studioId};
+        select s.id, s.seat_column, s.seat_row, s.seat_status,h.h_name
+        from seat s,hall h
+        where s.studio_id = #{studioId} and h.id = #{studioId};
     </select>
     <select id="getId" resultType="integer">
         select id from seat

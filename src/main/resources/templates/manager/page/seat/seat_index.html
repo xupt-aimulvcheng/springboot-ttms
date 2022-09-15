@@ -185,7 +185,7 @@
                         <div class="front">银幕中央</div>
                     </div>
                     <div class="booking-details">
-                        <p>演出厅：<span id="studioname">VIP厅</span></p>
+                        <p>演出厅：<span id="hName"></span></p>
                         <p>已选座位：</p>
                         <ul id="selected-seats"></ul>
                         <br>
@@ -321,6 +321,8 @@
             'id='+hId
         ).then(function (response) {
             var json = response.data;
+            let hName = json[0].hall.hname;
+            $("#hName").html(hName);
             var len = json.length;
             var rowSet = new Array(len);
             var colSet = new Array(len);

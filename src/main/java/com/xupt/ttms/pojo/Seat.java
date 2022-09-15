@@ -7,6 +7,8 @@ public class Seat {
     private Integer col;
     private Integer status = 1; //1代表完好，0代表损坏，2代表已购买
 
+    private Hall hall;
+
     public Seat() {
     }
 
@@ -23,6 +25,14 @@ public class Seat {
         this.row = row;
         this.col = col;
         this.status = status;
+    }
+
+    public Hall getHall() {
+        return hall;
+    }
+
+    public void setHall(Hall hall) {
+        this.hall = hall;
     }
 
     public Integer getId() {
