@@ -140,9 +140,6 @@ public class PlanServiceImpl implements PlanService {
         return planMapper.getMovieIDByName(name);
     }
 
-    public BigDecimal getPriceBymId(Integer mId) {
-        return planMapper.getPriceBymId(mId);
-    }
 
     public List<Plan> getPlanByName(String pName) {
         return planMapper.getPlanByName(pName);

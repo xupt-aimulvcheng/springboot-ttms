@@ -36,6 +36,12 @@
         </div>
     </div>
     <div class="layui-form-item">
+        <label class="layui-form-label">价格</label>
+        <div class="layui-input-inline">
+            <input type="text" lay-verify="required|money" name="price" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
         <label class="layui-form-label">开始时间</label>
         <div class="layui-input-inline">
             <input type="text" name="startDate" class="layui-input" id="test5" placeholder="yyyy-MM-dd HH:mm:ss">
@@ -74,7 +80,11 @@
             name:[
                 /^[\u4e00-\u9fa5]{3,8}[0-9]{0,3}$/,
                 '至少有三个汉字且数字最多为3个只能在结尾'
-            ]
+            ],
+            money: [
+                /^([0-9]+|[0-9]{1,3}(,[0-9]{3})*)(.[0-9]{1,2})?$/,
+                '请输入正确的金额'
+            ],
         })
         form.val("formTest", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
             "mId": getUrlParam("mID"), // "name": "value"

@@ -23,7 +23,6 @@ public interface PlanMapper {
 
     int getMovieIDByName(@Param("name") String name);
 
-    BigDecimal getPriceBymId(@Param("mId") Integer mId);
 
     List<Plan> getPlanByName(@Param("name") String pName);
 

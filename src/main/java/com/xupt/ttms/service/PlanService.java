@@ -14,8 +14,6 @@ public interface PlanService {
     public int deletePlanByIds(String ids);
     public Integer getHallIDByName(String name);
     public int getMovieIDByName(String name);
-    BigDecimal getPriceBymId(Integer id);
-
     List<Plan> getPlanByName(String pName);
     List<Plan> getPlanByhName(String hName);
     boolean belongCalendar(String startDate, String mId,String hName);

@@ -59,7 +59,6 @@ public class PlanServlet {
     @RequestMapping(value = "/plan/addPlan", method = RequestMethod.POST)
     @ResponseBody
     public String addPlan(@RequestBody Plan plan) {
-        System.out.println(plan.gethName());
         //在已有的时间内
         if (planService.belongCalendar(plan.getStartDate(), String.valueOf(plan.getmId()),plan.gethName())){
             return "抱歉，设置的时间已有演出计划,请输入正确的数据";
@@ -68,7 +67,6 @@ public class PlanServlet {
             return "抱歉，无该演出厅,请输入正确的数据";
         if (!planService.getPlanByName(plan.getpName()).isEmpty())
             return "抱歉，该演出计划已存在,请输入正确的数据";
-        plan.setPrice(planService.getPriceBymId(plan.getmId()));
         plan.setEndDate(planService.getEndTime(String.valueOf(plan.getmId()), plan.getStartDate()));
         plan.sethId(planService.getHallIDByName(plan.gethName()));
         System.out.println(plan);

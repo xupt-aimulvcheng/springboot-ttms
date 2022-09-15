@@ -82,11 +82,6 @@
         from movie
         where m_name = #{name};
     </select>
-    <select id="getPriceBymId" resultType="java.math.BigDecimal">
-        select m_price
-        from movie
-        where id = #{mId};
-    </select>
     <select id="getPlanByName" resultType="com.xupt.ttms.pojo.Plan">
         select id
         from plan

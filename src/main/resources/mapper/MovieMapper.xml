@@ -11,7 +11,6 @@
         <result column="m_name" property="mName" jdbcType="VARCHAR"/>
         <result column="m_type" property="mType" jdbcType="VARCHAR"/>
         <result column="m_length" property="mLength" jdbcType="INTEGER"/>
-        <result column="m_price" property="mPrice" jdbcType="DOUBLE"/>
         <result column="m_date" property="mDate" jdbcType="VARCHAR"/>
         <result column="m_director" property="mDirector" jdbcType="VARCHAR"/>
         <result column="m_actor" property="mActor" jdbcType="VARCHAR"/>
