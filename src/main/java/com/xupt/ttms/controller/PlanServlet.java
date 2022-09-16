@@ -27,8 +27,8 @@ public class PlanServlet {
     @RequestMapping(value = "/plan/getAllPlan", method = RequestMethod.GET)
     @ResponseBody
     public Result getAllPlan(@RequestParam("page") int pageNum, @RequestParam("limit") int pageSize, @RequestParam("id") int id,
-                             @RequestParam(value = "startDate", required = false) String startDate, @RequestParam(value = "endDate", required = false) String endDate, @RequestParam(value = "name", required = false) String name) {
-        PageInfo<Plan> plans = planService.getAllPlansBymID(String.valueOf(id), pageNum, pageSize, startDate, endDate, name);
+                             @RequestParam(value = "startDate", required = false) String startDate, @RequestParam(value = "endDate", required = false) String endDate, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "status", required = false) String status) {
+        PageInfo<Plan> plans = planService.getAllPlansBymID(String.valueOf(id), pageNum, pageSize, startDate, endDate, name,status);
         Result result = ToResult.getResult(plans);
         return result;
     }
@@ -51,8 +51,8 @@ public class PlanServlet {
 
     @RequestMapping(value = "/plan/delete/{ids}", method = RequestMethod.POST)
     @ResponseBody
-    public String deletePlan(@PathVariable String ids){
-        return planService.deletePlan(ids)<=0?"删除失败":"删除成功";
+    public String deletePlan(@PathVariable String ids) {
+        return planService.deletePlan(ids) <= 0 ? "删除失败" : "删除成功";
     }
 
 
@@ -60,7 +60,7 @@ public class PlanServlet {
     @ResponseBody
     public String addPlan(@RequestBody Plan plan) {
         //在已有的时间内
-        if (planService.belongCalendar(plan.getStartDate(), String.valueOf(plan.getmId()),plan.gethName())){
+        if (planService.belongCalendar(plan.getStartDate(), String.valueOf(plan.getmId()), plan.gethName())) {
             return "抱歉，设置的时间已有演出计划,请输入正确的数据";
         }
         if (planService.getHallIDByName(plan.gethName()) == null)

@@ -13,6 +13,7 @@
         <result property="mName" column="m_name"></result>
         <result property="hName" column="h_name"></result>
         <result property="price" column="price" javaType="java.math.BigDecimal"></result>
+        <result property="status" column="status"></result>
         <!--        <association property="hName" -->
     </resultMap>
     <insert id="insert">
@@ -40,6 +41,18 @@
         </set>
         where id = #{plan.id}
     </update>
+    <update id="onlinePlan">
+        update plan set status = '已上线' where id in
+        <foreach collection="plans" item="plan" separator="," open="(" close=")">
+            #{plan.id}
+        </foreach>
+    </update>
+    <update id="offline">
+        update plan set status = '待上线' where id in
+        <foreach collection="plans" item="plan" open="(" close=")" separator=",">
+              #{plan.id}
+        </foreach>
+    </update>
     <delete id="deletePlanByIds">
         delete
         from plan
@@ -51,13 +64,16 @@
         where id in (#{ids})
     </delete>
     <select id="getAllPlansBymID" resultMap="BaseResultMap">
-        select id,p_name,m_id,p_startTime,p_endTime,h_id,price,
+        select id,p_name,m_id,p_startTime,p_endTime,h_id,price,status,
         (select m_name from movie where id = #{mId}) as m_name,
         (select h_name from hall where id in (select h_id from plan where m_id = #{mId})) as h_name
         from plan
         where m_id = #{mId}
         <if test="startDate!= null and startDate!= ''">
             and p_startTime &lt;=#{startDate}
+        </if>
+        <if test="status!= null and status!= ''">
+            and status =#{status}
         </if>
         <if test="endDate!= null and endDate!= ''">
             and p_endTime>=#{endDate}
@@ -88,7 +104,7 @@
         where p_name = #{name};
     </select>
     <select id="getPlanByhName" resultMap="BaseResultMap">
-        select id, p_name, p_startTime, p_endTime
+        select id, p_name, p_startTime, p_endTime, status
         from plan
         where h_id in (select id from hall where h_name = #{hName});
     </select>
@@ -97,6 +113,7 @@
                p_startTime,
                p_name,
                m_id,
+               status,
                (select h_name from hall where id in (select h_id from plan where id = #{id})) as h_name,
                price
         from plan

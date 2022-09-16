@@ -5,4 +5,30 @@
 
 <mapper namespace="com.xupt.ttms.mapper.TicketMapper">
 
+    <insert id="insertTicker">
+        insert into ticket (seat_id, plan_id, ticket_price, ticket_status) values
+        <foreach collection="list" item="ticket" separator=",">
+            (#{ticket.seatId},#{ticket.planId},#{ticket.ticketPrice},#{ticket.status})
+        </foreach>
+    </insert>
+    <update id="updateTicket">
+        <foreach collection="seats" item="seat" separator=";">
+            update ticket set ticket_status = #{seat.status} where seat_id = #{seat.id}
+        </foreach>
+    </update>
+    <delete id="deleteTicket">
+        delete from ticket where ticket.plan_id in
+        <foreach collection="list" item="plan" open="(" close=")" separator=",">
+            #{plan.id}
+        </foreach>
+    </delete>
+    <delete id="deleteTicketByPIds">
+        delete from ticket where plan_id in (#{pIds});
+    </delete>
+    <select id="getTicketBySeats" resultType="java.lang.Integer">
+        select count(*) from ticket where ticket_id in
+        <foreach collection="seats" item="seat" open="(" close=")" separator=",">
+            #{seat.id}
+        </foreach>
+    </select>
 </mapper>

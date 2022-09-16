@@ -39,6 +39,13 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">状态</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="status" value="已上线" title="已上线">
+                                <input type="radio" name="status" value="待上线" title="待上线">
+                            </div>
+                        </div>
                         <div class="layui-inline">
                             <button id="search" type="submit" class="layui-btn layui-btn-radius layui-btn-normal"
                                     lay-submit lay-filter="data-search-btn">
@@ -55,9 +62,10 @@
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
                 <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加</button>
-                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除
-                </button>
-                <button class="layui-btn layui-btn-sm layui-btn-warm" lay-event="online"> 上线计划</button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除</button>
+                <button class="layui-btn layui-btn-sm layui-btn-warm" lay-event="online">上线计划</button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="offline">下线计划</button>
+
             </div>
         </script>
 
@@ -65,6 +73,8 @@
 
         <script type="text/html" id="currentTableBar">
             <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">修改</a>
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="online">上线计划</a>
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-delete" lay-event="offline">下线计划</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
 
@@ -91,14 +101,25 @@
         });
     });
 
+    //判断选中的是否含有已上线的演出计划
+    function beOnline(jsonArr) {
+        for (let i = 0; i < jsonArr.length; i++) {
+            if (jsonArr[i].status === '已上线'){
+                return true;
+            }
+            return false;
+        }
+    }
+
     function refresh() {
         $('#reset-form').click();
         $('#search').click();
     }
 
-    layui.use(['form', 'table'], function () {
+    layui.use(['form', 'table', 'layer'], function () {
         var $ = layui.jquery,
             form = layui.form,
+            layer = layui.layer,
             table = layui.table;
         table.render({
             elem: '#currentTableId',
@@ -116,10 +137,11 @@
                 {field: 'pName', width: 222, title: '演出计划名称'},
                 {field: 'hName', width: 222, title: '演出位置'},
                 {field: 'mName', width: 222, title: '电影名称'},
-                {field: 'price', width: 200, title: '价格', sort: true},
+                {field: 'price', width: 150, title: '价格', sort: true},
+                {field: 'status', width: 150, title: '状态', sort: true},
                 {field: 'startDate', width: 200, title: '开始日期', sort: true},
                 {field: 'endDate', width: 200, title: '结束日期', sort: true},
-                {title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center"}
+                {title: '操作', minWidth: 280, toolbar: '#currentTableBar', align: "center"}
             ]],
             limits: [5, 10, 15, 20, 25, 50, 100],
             limit: 5,
@@ -129,8 +151,6 @@
 
         // 监听搜索操作
         form.on('submit(data-search-btn)', function (data) {
-            var result = JSON.stringify(data.field);
-            console.log(result);
             //执行搜索重载
             table.reload('currentTableId', {
                 page: {
@@ -139,7 +159,8 @@
                 , where: {
                     startDate: data.field.startDate,
                     endDate: data.field.endDate,
-                    name: data.field.name
+                    name: data.field.name,
+                    status:data.field.status
                 }
             });
             return false;
@@ -169,7 +190,7 @@
                     layer.alert("您没有选中任何数据", {icon: 2, anim: 6, title: "警告"});
                     return false;
                 }
-                layer.confirm('真的删除行么', function (index) {
+                layer.confirm('真的删除行么', function () {
                     var Arrid = new Array();
                     for (var i = 0; i < data.length; i++) {
                         Arrid.push(data[i].id);
@@ -178,10 +199,31 @@
                     var url = '/plan/delete/' + ids;
                     axios.post(
                         url,
-                    ).then(function (response) {
-                        var data = response.data;
-                        console.log(data);
-                        layer.msg(response.data, {
+                    ).then(function (data) {
+                        layer.msg(data, {
+                            icon: 1,
+                            title: "操作结果"
+                        })
+                        refresh();
+                    })
+                })
+            }
+            else if (obj.event === 'offline') {  // 监听下线操作
+                var checkStatus = table.checkStatus('currentTableId')
+                    , data = checkStatus.data;
+                if (data.length == 0) {
+                    layer.alert("您没有选中任何数据", {icon: 2, anim: 6, title: "警告"});
+                    return false;
+                }
+                if (!beOnline(data)){
+                    layer.alert("您选中的演出计划含有已下线的演出计划", {icon: 2, anim: 6, title: "警告"});
+                    return false;
+                }
+                console.log(data);
+                layer.confirm('真的下线行么', function () {
+                    axios.post('/ticket/deleteTicket',data).then(function (response) {
+                        let data=response.data.data
+                        layer.msg(data, {
                             icon: 1,
                             title: "操作结果"
                         })
@@ -195,10 +237,18 @@
                     layer.alert("您没有选中任何数据", {icon: 2, anim: 6, title: "警告"});
                     return false;
                 }
-                axios.post('/ticket/insertTicket',data).then(function (res) {
-                    var data = res.data;
+                if (beOnline(data)){
+                    layer.alert("您选中的演出计划含有已上线的演出计划", {icon: 2, anim: 6, title: "警告"});
+                    return false;
+                }
+                axios.post('/ticket/insertTicket',data).then(function (response) {
+                    let data=response.data.data
+                    layer.msg(data, {
+                        icon: 1,
+                        title: "操作结果"
+                    })
+                    refresh();
                 })
-                console.log(checkStatus.data)
             }
         });
 
@@ -219,11 +269,6 @@
                     shadeClose: true,
                     area: ['100%', '100%'],
                     content: '/movie/getPlanById/' + data.id,
-                    success: function () {
-                        //表单数据回显
-                        form.val("scoreRuleForm", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
-                        });
-                    }
                 });
                 $(window).on("resize", function () {
                     layer.full(index);
@@ -231,10 +276,10 @@
                 return false;
             } else if (obj.event === 'delete') {
                 var data = obj.data;
-                layer.confirm("您确定要删除" + data.mName + "行么", function (index) {
+                layer.confirm("您确定要删除" + data.pName + "行么", function () {
                     var id = data.id;
-                    var url = '/plan/delete/+ id';
-                    $.post(url, function (data, status) {
+                    var url = '/plan/delete/'+ id;
+                    $.post(url, function (data) {
                         layer.msg(data, {
                             icon: 1,
                             title: "操作结果"
@@ -243,9 +288,41 @@
                     })
                 });
             }
+            else if (obj.event === 'online') {
+                let jsonArr=[];
+                jsonArr.push(data);
+                if (beOnline(jsonArr)){
+                    layer.alert("您选中的演出计划已上线", {icon: 2, anim: 6, title: "警告"});
+                    return false;
+                }
+                axios.post('/ticket/insertTicket',jsonArr).then(function (response) {
+                    let data=response.data.data
+                    layer.msg(data, {
+                        icon: 1,
+                        title: "操作结果"
+                    })
+                    refresh();
+                })
+            }
+            else if (obj.event === 'offline') {  // 监听下线操作
+                let jsonArr=[];
+                jsonArr.push(data);
+                if (!beOnline(jsonArr)){
+                    layer.alert("您选中的演出计划已下线", {icon: 2, anim: 6, title: "警告"});
+                    return false;
+                }
+                layer.confirm("您确定要下线" + data.pName + "行么", function () {
+                    axios.post('/ticket/deleteTicket',jsonArr).then(function (response) {
+                        let data=response.data.data
+                        layer.msg(data, {
+                            icon: 1,
+                            title: "操作结果"
+                        })
+                        refresh();
+                    })
+                })
+            }
         });
-
-
     });
 </script>
 </body>

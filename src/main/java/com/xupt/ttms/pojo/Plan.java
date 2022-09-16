@@ -8,38 +8,15 @@ import java.math.BigDecimal;
 @Component
 public class Plan {
     private Integer id;
-
-    public String getmName() {
-        return mName;
-    }
-
-    public void setmName(String mName) {
-        this.mName = mName;
-    }
-
-    public String gethName() {
-        return hName;
-    }
-
-    public void sethName(String hName) {
-        this.hName = hName;
-    }
-
     private String mName;
     private String hName;
     private Integer mId;
     private Integer hId;
     private String pName;
     private String startDate;
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
+    private String endDate;
+    private BigDecimal price;
+    private String status="待上线";
     @Override
     public String toString() {
         return "Plan{" +
@@ -56,39 +33,28 @@ public class Plan {
                 '}';
     }
 
-    public Plan(Integer id, String mName, String hName, Integer mId, Integer hId, String pName, String startDate, String endDate, BigDecimal price, String address) {
-        this.id = id;
-        this.mName = mName;
-        this.hName = hName;
-        this.mId = mId;
-        this.hId = hId;
-        this.pName = pName;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.price = price;
-    }
-
-    public Plan(Integer id, String mName, String hName, Integer mId, Integer hId, String pName, String startDate, String endDate, BigDecimal price) {
-        this.id = id;
-        this.mName = mName;
-        this.hName = hName;
-        this.mId = mId;
-        this.hId = hId;
-        this.pName = pName;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.price = price;
-    }
-
-    private String endDate;
-    private BigDecimal price;
-
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getmName() {
+        return mName;
+    }
+
+    public void setmName(String mName) {
+        this.mName = mName;
+    }
+
+    public String gethName() {
+        return hName;
+    }
+
+    public void sethName(String hName) {
+        this.hName = hName;
     }
 
     public Integer getmId() {
@@ -129,6 +95,46 @@ public class Plan {
 
     public void setEndDate(String endDate) {
         this.endDate = endDate;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Plan(Integer id, String mName, String hName, Integer mId, Integer hId, String pName, String startDate, String endDate, BigDecimal price, String address) {
+        this.id = id;
+        this.mName = mName;
+        this.hName = hName;
+        this.mId = mId;
+        this.hId = hId;
+        this.pName = pName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.price = price;
+    }
+
+    public Plan(Integer id, String mName, String hName, Integer mId, Integer hId, String pName, String startDate, String endDate, BigDecimal price) {
+        this.id = id;
+        this.mName = mName;
+        this.hName = hName;
+        this.mId = mId;
+        this.hId = hId;
+        this.pName = pName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.price = price;
     }
 
     public Plan() {

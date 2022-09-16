@@ -1,6 +1,7 @@
 package com.xupt.ttms.service.impl;
 
 import com.xupt.ttms.mapper.SeatMapper;
+import com.xupt.ttms.mapper.TicketMapper;
 import com.xupt.ttms.pojo.Seat;
 import com.xupt.ttms.service.SeatService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ public class SeatServiceImpl implements SeatService {
     @Autowired
     private SeatMapper seatMapper;
 
+    @Autowired
+    private TicketMapper ticketMapper;
 
     @Override
     public List<Seat> getSeatList(Integer studioId) {
@@ -27,7 +30,10 @@ public class SeatServiceImpl implements SeatService {
             Integer id = seatMapper.getId(seats.get(i));
             seats.get(i).setId(id);
         }
-//        seatMapper.updateTicket(seats);
-        return seatMapper.updateSeats(seats);
+        int ticketResult = 0;
+        if (ticketMapper.getTicketBySeats(seats)>0){  //表里有要修改的数据
+            ticketResult =ticketMapper.updateTicket(seats);
+        }
+        return seatMapper.updateSeats(seats)+ticketResult;
     }
 }

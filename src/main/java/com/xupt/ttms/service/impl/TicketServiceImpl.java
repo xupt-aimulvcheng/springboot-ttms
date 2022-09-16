@@ -1,12 +1,10 @@
 package com.xupt.ttms.service.impl;
 
+import com.xupt.ttms.mapper.PlanMapper;
 import com.xupt.ttms.mapper.TicketMapper;
-import com.xupt.ttms.pojo.Hall;
 import com.xupt.ttms.pojo.Plan;
 import com.xupt.ttms.pojo.Seat;
 import com.xupt.ttms.pojo.Ticket;
-import com.xupt.ttms.service.HallService;
-import com.xupt.ttms.service.PlanService;
 import com.xupt.ttms.service.SeatService;
 import com.xupt.ttms.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,29 +19,59 @@ public class TicketServiceImpl implements TicketService {
     @Autowired
     private SeatService seatService;
     @Autowired
-    private PlanService planService;
-    @Autowired
     private TicketMapper ticketMapper;
+    @Autowired
+    private PlanMapper planMapper;
 
     /**
      * 通过某个演出计划得到单个的票集合
-     * @param plan
-     * @return
+     * @param plans  待上线的演出计划
+     * @return  所有生成的票集合
      */
     @Override
-    public List<Ticket> getTicketByPlan(Plan plan) {
+    public List<Ticket> getTicketByPlan(List<Plan> plans) {
         List<Ticket> list = new ArrayList<>();
-        List<Seat> seatList = seatService.getSeatList(plan.gethId());
-        for (int i = 0; i < seatList.size(); i++) {
-            Ticket ticket = new Ticket();
-            Integer seatID=seatList.get(i).getId();
-            Integer status = seatList.get(i).getStatus();
-            ticket.setSeatId(seatID);
-            ticket.setStatus(status);
-            ticket.setTicketPrice(plan.getPrice());
-            ticket.setPlanId(plan.getId());
-            list.add(ticket);
+        //待上线的演出计划只有一个
+        if (plans.size() == 1) {
+            Plan plan = plans.get(0);
+            List<Seat> seatList = seatService.getSeatList(plan.gethId());
+            for (Seat seat : seatList) {
+                Ticket ticket = new Ticket();
+                Integer seatID = seat.getId();
+                Integer status = seat.getStatus();
+                ticket.setSeatId(seatID);
+                ticket.setStatus(status);
+                ticket.setTicketPrice(plan.getPrice());
+                ticket.setPlanId(plan.getId());
+                list.add(ticket);
+            }
+        }
+        //待上线的演出计划有多个
+        else {
+            for (Plan plan : plans) {
+                List<Seat> seatList = seatService.getSeatList(plan.gethId());
+                for (int j = 0; j < seatList.size(); j++) {
+                    Ticket ticket = new Ticket();
+                    Integer seatID = seatList.get(j).getId();
+                    Integer status = seatList.get(j).getStatus();
+                    ticket.setSeatId(seatID);
+                    ticket.setStatus(status);
+                    ticket.setTicketPrice(plan.getPrice());
+                    ticket.setPlanId(plan.getId());
+                    list.add(ticket);
+                }
+            }
         }
         return list;
+    }
+    @Override
+    public int insertTicket(List<Plan> plans) {
+        List<Ticket> list = getTicketByPlan(plans);
+        return ticketMapper.insertTicker(list)+planMapper.onlinePlan(plans);
+    }
+
+    @Override
+    public int deleteTicket(List<Plan> list) {
+        return ticketMapper.deleteTicket(list)+planMapper.offline(list);
     }
 }

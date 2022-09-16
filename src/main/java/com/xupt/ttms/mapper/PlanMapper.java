@@ -15,7 +15,7 @@ public interface PlanMapper {
 
     int insert(@Param("plan") Plan plan);
 
-    List<Plan> getAllPlansBymID(@Param("mId") String mId, @Param("startDate") String startDate, @Param("endDate") String endDate,@Param("pName") String pName);
+    List<Plan> getAllPlansBymID(@Param("mId") String mId, @Param("startDate") String startDate, @Param("endDate") String endDate,@Param("pName") String pName,@Param("status") String status);
 
     int getMovieTimeBymID(@Param("mId") String mId);
 
@@ -31,4 +31,8 @@ public interface PlanMapper {
     List<Plan> getPlanByhName(@Param("hName") String hName);
 
     Plan getPlanByID(@Param("id") Integer id);
+
+    int onlinePlan(@Param("plans") List<Plan> plans);
+
+    int offline(@Param("plans") List<Plan> plans);
 }

@@ -9,6 +9,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xupt.ttms.mapper.PlanMapper;
+import com.xupt.ttms.mapper.TicketMapper;
 import com.xupt.ttms.pojo.Plan;
 import com.xupt.ttms.service.PlanService;
 import com.xupt.ttms.util.TypeCasting;
@@ -32,10 +33,9 @@ public class PlanServiceImpl implements PlanService {
 
     @Autowired
     private PlanMapper planMapper;
-    /*{
-        SqlSession sqlSession = SqlSessionUtil.getSqlSession();
-        planMapper = sqlSession.getMapper(PlanMapper.class);
-    }*/
+    @Autowired
+    private TicketMapper ticketMapper;
+
 
     /**
      * 根据电影时长和起始时间获取终止时长
@@ -152,7 +152,7 @@ public class PlanServiceImpl implements PlanService {
 
     @Override
     public int deletePlan(String ids) {
-        return planMapper.deletePlan(ids);
+        return ticketMapper.deleteTicketByPIds(ids)+planMapper.deletePlan(ids);
     }
 
     public int insertPlan(Plan plan) {
@@ -167,9 +167,9 @@ public class PlanServiceImpl implements PlanService {
         return planMapper.deletePlanByIds(ids);
     }
 
-    public PageInfo<Plan> getAllPlansBymID(String mId, int pageNum, int PageSize, String startDate, String endDate, String pName) {
+    public PageInfo<Plan> getAllPlansBymID(String mId, int pageNum, int PageSize, String startDate, String endDate, String pName,String status) {
         Page<Plan> Movies = PageHelper.startPage(pageNum, PageSize);
-        List<Plan> plans = planMapper.getAllPlansBymID(mId, startDate, endDate, pName);
+        List<Plan> plans = planMapper.getAllPlansBymID(mId, startDate, endDate, pName,status);
         for (int i = 0; i < plans.size(); i++) {
             Plan plan = plans.get(i);
             plan.setEndDate(getEndTime(mId, plan.getStartDate()));
