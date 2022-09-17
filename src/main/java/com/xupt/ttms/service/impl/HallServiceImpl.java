@@ -9,6 +9,8 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xupt.ttms.mapper.HallMapper;
+import com.xupt.ttms.mapper.PlanMapper;
+import com.xupt.ttms.mapper.SeatMapper;
 import com.xupt.ttms.pojo.Hall;
 import com.xupt.ttms.pojo.HallExample;
 import com.xupt.ttms.pojo.Movie;
@@ -28,12 +30,16 @@ import java.util.List;
 public class HallServiceImpl implements HallService {
     @Autowired
     private HallMapper hallMapper;
+    @Autowired
+    private SeatMapper seatMapper;
+    @Autowired
+    private PlanMapper planMapper;
 
     public int insert(Hall hall) {
         int j = hallMapper.insert(hall);
         Integer id = hall.getId();
         List<Seat> seats = getSeatList(id);
-        int i = hallMapper.insertSeat(seats);
+        int i = seatMapper.insertSeat(seats);
         return i+j;
     }
 
@@ -102,6 +108,9 @@ public class HallServiceImpl implements HallService {
      * 批量删除演出厅
      */
     public int deleteHall(String ids) {
+        if (planMapper.getAllByHId(ids)!=0){
+            return -1;
+        }
         return hallMapper.deleteSeatsByHId(ids)+hallMapper.deleteById(ids);
     }
 }

@@ -198,12 +198,6 @@
       </if>
     </trim>
   </insert>
-    <insert id="insertSeat">
-        insert into seat value 
-        <foreach collection="seat" item="seat" separator=",">
-            (null,#{seat.studioId},#{seat.row},#{seat.col},#{seat.status})
-        </foreach>
-    </insert>
     <select id="countByExample" parameterType="com.xupt.ttms.pojo.HallExample" resultType="java.lang.Integer">
     <!--
       WARNING - @mbggenerated

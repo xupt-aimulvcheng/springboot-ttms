@@ -119,4 +119,7 @@
         from plan
         where id = #{id};
     </select>
+    <select id="getAllByHId" resultType="java.lang.Integer">
+        select count(*) from plan where h_id in #{hId}
+    </select>
 </mapper>

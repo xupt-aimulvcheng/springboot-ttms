@@ -70,7 +70,11 @@ public class HallServlet {
         int delete = hallService.deleteHall(ids);
         if (delete >= 1) {
             code.setInfo("删除成功");
-        } else {
+        }
+        else if (delete == -1){
+            code.setInfo("含有演出计划在选中的演出厅演出，无法删除");
+        }
+        else {
             code.setInfo("删除失败");
         }
         return code;

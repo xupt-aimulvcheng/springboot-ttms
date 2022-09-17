@@ -99,12 +99,5 @@ public interface HallMapper {
 
     int deleteById(@Param("ids") String ids);
 
-    /**
-     * 批量添加座位
-     * @param seat
-     * @return
-     */
-    int insertSeat(@Param("seat") List<Seat> seat);
-
     int deleteSeatsByHId(@Param("ids") String ids);
 }

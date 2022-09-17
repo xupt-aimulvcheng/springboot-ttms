@@ -35,4 +35,6 @@ public interface PlanMapper {
     int onlinePlan(@Param("plans") List<Plan> plans);
 
     int offline(@Param("plans") List<Plan> plans);
+
+    int getAllByHId(@Param("hId") String hId);
 }
