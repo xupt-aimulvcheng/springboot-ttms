@@ -23,4 +23,6 @@ public interface PlanService {
     List<String> getAllTime(String startDate, String endDate);
 
     Plan getPlanByID(Integer id);
+
+    List<Plan> getPlanByMIdAndTime(String mId, Integer time);
 }

@@ -12,6 +12,7 @@ import com.xupt.ttms.mapper.PlanMapper;
 import com.xupt.ttms.mapper.TicketMapper;
 import com.xupt.ttms.pojo.Plan;
 import com.xupt.ttms.service.PlanService;
+import com.xupt.ttms.util.DateUtil;
 import com.xupt.ttms.util.TypeCasting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,9 +96,21 @@ public class PlanServiceImpl implements PlanService {
         return planMapper.getPlanByID(id);
     }
 
-    /*public List<String> getAllStartTimeByhNamed(String name) {
-        planMapper.getPlanByName()
-    }*/
+    /**
+     *
+     * @param mId 电影id
+     * @param time 距离今天的时间
+     * @return
+     */
+    @Override
+    public List<Plan> getPlanByMIdAndTime(String mId, Integer time) {
+        Date date = DateUtil.getDate();
+        //如果是当天则需要时分秒，反之只需要知道那一天的日期即可
+        String format = time==0?"yyyy-MM-dd HH:mm:ss":"yyyy-MM-dd";
+        String Time = DateUtil.formatDate(DateUtil.dealDays(date, time),format);
+        String nextTime = DateUtil.formatDate(DateUtil.dealDays(date, time+1),format);
+        return planMapper.getPlanByMIdAndTime(mId,Time,nextTime);
+    }
 
     /**
      * 判断一个时间段的集合是否在规定的时间段

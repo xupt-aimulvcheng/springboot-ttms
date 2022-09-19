@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.annotation.WebServlet;
+import java.util.List;
 
 @Controller
 @WebServlet("/planServlet")
@@ -71,5 +72,12 @@ public class PlanServlet {
         plan.sethId(planService.getHallIDByName(plan.gethName()));
         System.out.println(plan);
         return (planService.insertPlan(plan) > 0 ? "添加成功" : "添加失败");
+    }
+
+    @GetMapping("/plan/getPlanByMIdAndTime/{MId}")
+    @ResponseBody
+    public Result getPlanByMIdAndTime(@PathVariable("MId") String MId,@RequestParam(value = "Time",required = false) Integer Time){
+        List<Plan> plans = planService.getPlanByMIdAndTime(MId,Time);
+        return ToResult.getResult(plans);
     }
 }

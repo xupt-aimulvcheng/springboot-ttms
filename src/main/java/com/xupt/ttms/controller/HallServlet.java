@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
-//@WebServlet("/hallServlet")
 @Controller
 public class HallServlet {
     @Autowired

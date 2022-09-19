@@ -156,7 +156,9 @@
             }
         })
     }
-
+    function BuyTicket(){
+        window.location = '/ToMoviePlan/'+$("#movie-id").val();
+    }
     //将后端返回电影详情的数据渲染到页面上
     function render(json) {
         $("#cover").attr("src", json.mImage);
@@ -225,7 +227,7 @@ line-height:20px;"></h3>
                         </div>
                     </a>
                 </div>
-                <a class="btn buy" href="">
+                <a class="btn buy" onclick="BuyTicket()">
                     购票
                 </a>
             </div>

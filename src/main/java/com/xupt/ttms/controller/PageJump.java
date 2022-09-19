@@ -1,7 +1,9 @@
 package com.xupt.ttms.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * 完成页面跳转
@@ -63,5 +65,10 @@ public class PageJump {
     @GetMapping("/seat/index")
     public String g(){
         return "manager/page/seat/index";
+    }
+    @GetMapping("/ToMoviePlan/{mid}")
+    public String p(Model model, @PathVariable("mid") Integer mid){
+        model.addAttribute("MId",mid);
+        return "user/movie_plan";
     }
 }
