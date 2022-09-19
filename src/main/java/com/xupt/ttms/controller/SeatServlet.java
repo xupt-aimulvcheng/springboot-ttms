@@ -29,11 +29,6 @@ public class SeatServlet {
     @RequestMapping(value = "/seat/updateSeats", method = RequestMethod.POST)
     @ResponseBody
     public String updateSeats(@RequestBody List<Seat> seats) {
-        try {
-            int i = seatService.updateSeats(seats);
-            return "修改成功";
-        } catch(Exception e) {
-            return "修改失败";
-        }
+        return seatService.updateSeats(seats)>=1?"修改成功":"修改失败";
     }
 }

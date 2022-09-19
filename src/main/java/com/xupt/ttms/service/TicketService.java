@@ -9,4 +9,5 @@ public interface TicketService {
     List<Ticket> getTicketByPlan(List<Plan> plans);
     int insertTicket(List<Plan> plans);
     int deleteTicket(List<Plan> list);
+    List<Ticket> getTicketsByPId(String pId);
 }

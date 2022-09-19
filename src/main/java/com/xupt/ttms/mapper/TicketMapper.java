@@ -23,4 +23,6 @@ public interface TicketMapper {
      * 判断票表里是否有对应座位的id
      */
     int getTicketBySeats(@Param("seats") List<Seat> seats);
+
+    List<Ticket> getTicketsByPId(@Param("pId") String pId);
 }

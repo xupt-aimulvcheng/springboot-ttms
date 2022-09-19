@@ -116,7 +116,6 @@ line-height:20px;"></h3>
             <input type="radio" name="date" lay-filter="date" value="3" id="nextday">
         </div>
     </div>
-    <!--    <input type="radio" name="date" value="1" title="明天">-->
 </form>
 <table style="text-align: center;" id="demo"  lay-filter="test"></table>
 </body>
@@ -219,6 +218,13 @@ line-height:20px;"></h3>
                         Time: data.value
                     }
                 })
+            });
+            table.on('tool(test)', function (obj) {
+                var data = obj.data;
+                console.log(data)
+                if (obj.event === 'buyTicket') {
+                    window.location = '/butTicket/'+data.id
+                }
             });
         });
     })

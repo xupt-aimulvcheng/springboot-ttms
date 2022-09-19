@@ -107,8 +107,8 @@ public class PlanServiceImpl implements PlanService {
         Date date = DateUtil.getDate();
         //如果是当天则需要时分秒，反之只需要知道那一天的日期即可
         String format = time==0?"yyyy-MM-dd HH:mm:ss":"yyyy-MM-dd";
-        String Time = DateUtil.formatDate(DateUtil.dealDays(date, time),format);
-        String nextTime = DateUtil.formatDate(DateUtil.dealDays(date, time+1),format);
+        String Time = DateUtil.formatDate(DateUtil.dealDays(date, time),format);//今天time天后的时间
+        String nextTime = DateUtil.formatDate(DateUtil.dealDays(date, time+1),format);//今天time+1天后的时间
         return planMapper.getPlanByMIdAndTime(mId,Time,nextTime);
     }
 

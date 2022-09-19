@@ -74,4 +74,9 @@ public class TicketServiceImpl implements TicketService {
     public int deleteTicket(List<Plan> list) {
         return ticketMapper.deleteTicket(list)+planMapper.offline(list);
     }
+
+    @Override
+    public List<Ticket> getTicketsByPId(String pId) {
+        return ticketMapper.getTicketsByPId(pId);
+    }
 }

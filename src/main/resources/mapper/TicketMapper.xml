@@ -4,7 +4,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.xupt.ttms.mapper.TicketMapper">
-
+    <resultMap id="BaseResultMap" type="com.xupt.ttms.pojo.Ticket">
+        <id column="id" property="id"></id>
+        <result column="seat_id" property="seatId"></result>
+        <result column="plan_id" property="planId"></result>
+        <result column="ticket_price" property="ticketPrice"></result>
+        <result column="ticket_status" property="status"></result>
+        <result column="ticket_locktime" property="ticketLockTome"></result>
+        <result column="seat_column" property="col"></result>
+        <result column="seat_row" property="row"></result>
+    </resultMap>
     <insert id="insertTicker">
         insert into ticket (seat_id, plan_id, ticket_price, ticket_status) values
         <foreach collection="list" item="ticket" separator=",">
@@ -23,12 +32,26 @@
         </foreach>
     </delete>
     <delete id="deleteTicketByPIds">
-        delete from ticket where plan_id in (#{pIds});
+        delete
+        from ticket
+        where plan_id in (#{pIds});
     </delete>
     <select id="getTicketBySeats" resultType="java.lang.Integer">
-        select count(*) from ticket where ticket_id in
+        select count(*) from ticket where ticket.seat_id in
         <foreach collection="seats" item="seat" open="(" close=")" separator=",">
             #{seat.id}
         </foreach>
+    </select>
+    <select id="getTicketsByPId" resultMap="BaseResultMap">
+        select id,
+               seat_id,
+               plan_id,
+               ticket_price,
+               ticket_status,
+               ticket_locktime,
+               (select seat_column from seat s where s.id = t.seat_id) as seat_column,
+               (select seat_row from seat s where s.id = t.seat_id)    as seat_row
+        from ticket t
+        where plan_id in (#{pId});
     </select>
 </mapper>

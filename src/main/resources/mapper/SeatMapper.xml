@@ -31,9 +31,7 @@
     <update id="updateSeats">
         <foreach collection="seats" item="seat" separator=";">
         update seat set seat_status = #{seat.status}
-        where seat_column = #{seat.col}
-        and seat_row = #{seat.row}
-        and studio_id = #{seat.studioId}
+        where id = #{seat.id}
         </foreach>
     </update>
     <update id="updateTicket">

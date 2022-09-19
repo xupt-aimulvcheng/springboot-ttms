@@ -123,7 +123,7 @@
         select count(*) from plan where h_id in #{hId}
     </select>
     <select id="getPlanByMIdAndTime" resultMap="BaseResultMap">
-        select p_startTime,price,(select h_name from hall where h_id = hall.id) as h_name
+        select p_startTime,price,(select h_name from hall where h_id = hall.id) as h_name,id
                from plan
         <where>
             plan.status = '已上线'

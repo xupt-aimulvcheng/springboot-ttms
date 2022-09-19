@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>汉唐剧院管理系统-选座订票</title>
+    <title>开心影院-选座订票</title>
     <link rel="stylesheet" th:href="@{/main/css/font-awesome.min.css}" />
     <link rel="stylesheet" th:href="@{/main/css/slick.css}" />
     <link rel="stylesheet" th:href="@{/main/css/slicknav.css}" />
@@ -181,13 +181,13 @@
                         <p>票数：<span id="counter" style="color: red">0</span></p>
                         <p>总计：<b>￥<span id="total" style="color: red">0</span></b></p>
                         <br>
-                        <button type="button" class="btn btn-danger" id="submit">修改</button>
+                        <button type="button" class="btn btn-danger" id="submit">购买</button>
                     </div>
                     <div style="clear: both"></div>
                 </div>
                 <br />
             </div>
-
+            <input type="hidden" id="pId" th:value="${pId}">
         </div>
     </div>
 </div>
@@ -197,79 +197,197 @@
 <script th:src="@{/main/js/jquery-ui.min.js}"></script>
 <script th:src="@{/main/js/jquery.form.min.js}"></script>
 <script th:src="@{/main/js/jquery.validate.min.js}"></script>
-<script th:src="@{/main/js/theme.js}"></script>
+<!--<script th:src="@{/main/js/theme.js}"></script>-->
 <script th:src="@{/main/js/seat.js}"></script>
+<script th:src=" @{/main/js/axios.min.js}"></script>
 <script type="text/javascript">
-    // 此处为示例，具体请自行完成
-    var price = 35; //票价
-    $(document).ready(function() {
-        var $cart = $('#selected-seats'), //座位区
-            $counter = $('#counter'), //票数
-            $total = $('#total'); //总计金额
-        var sc = $('#seat-map').seatCharts({
-            //座位图
-            map: [
-                'aaaa_aaa',
-                'aaaa_aaa',
-                'aaaa_aaa',
-                'aaaa_aaa',
-                'aaaa_aaa',
-                'aaaa_aaa',
-                'aaaa_aaa',
-                'aaaa_aaa'
-            ],
-            naming : {
-                top : false,
-                getLabel : function (character, row, column) {
-                    return column;
-                }
-            },
-            legend : { //定义图例
-                node : $('#legend'),
-                items : [
-                    [ 'a', 'available',   '可选座' ],
-                    [ 'a', 'unavailable', '已售出']
-                ]
-            },
-            click: function () { //点击事件
-                if (this.status() == 'available') { //可选座
-                    $('<li>'+(this.settings.row+1)+'排'+this.settings.label+'座</li>')
-                        .attr('id', 'cart-item-'+this.settings.id)
-                        .data('seatId', this.settings.id)
-                        .appendTo($cart);
-                    $counter.text(sc.find('selected').length+1);
-                    $total.text(recalculateTotal(sc)+price);
-                    return 'selected';
-                }
-                else if (this.status() == 'selected') { //已选中
-                    //更新数量
-                    $counter.text(sc.find('selected').length-1);
-                    //更新总计
-                    $total.text(recalculateTotal(sc)-price);
-                    //删除已预订座位
-                    $('#cart-item-'+this.settings.id).remove();
-                    //可选座
-                    return 'available';
-                }
-                else if (this.status() == 'unavailable') { //已售出
-                    return 'unavailable';
-                }
-                else {
-                    return this.style();
+    var seatStr = [];
+    function getString(row, col, json) {
+        var seatArr = [];
+        var badArray = [];
+        var str = "";
+        var badStr = "";
+        for (var i = 1; i <= row; i++) {
+            for (var j = 1; j <= col; j++) {
+                for (var k = 0; k < json.length; k++) {
+                    if (json[k].status == 1 && json[k].row == i && json[k].col == j) {
+                        str += "a";
+                    } else if (json[k].status == 2 && json[k].row == i && json[k].col == j) {
+                        str += "b";
+                    } else if (json[k].status == 0 && json[k].row == i && json[k].col == j) {
+                        badStr += "'" + i + "_" + j + "'";
+                        badArray.push(badStr);
+                        badStr = "";
+                        str += "a";
+                    }
                 }
             }
+            seatArr.push(str);
+            str = "";
+        }
+        return seatArr;
+    }
+    var price; //票价
+    function getBadString(row, col, json) {
+        var seatArr = [];
+        var badArray = [];
+        var str = "";
+        var badStr = "";
+        for (var i = 1; i <= row; i++) {
+            for (var j = 1; j <= col; j++) {
+                for (var k = 0; k < json.length; k++) {
+                    if (json[k].status == 1 && json[k].row == i && json[k].col == j) {
+                        str += "a";
+                    } else if (json[k].status == 2 && json[k].row == i && json[k].col == j) {
+                        str += "b";
+                    } else if (json[k].status == 0 && json[k].row == i && json[k].col == j) {
+                        str += "a";
+                        badStr += i + "_" + j;
+                        badArray.push(badStr);
+                        badStr = "";
+                    }
+                }
+            }
+            seatArr.push(str);
+            if (badStr.length > 0) {
+                badArray.push(badStr);
+            }
+            badStr = "";
+            str = "";
+        }
+        return badArray;
+    }
+    $(function () {
+        axios.post(
+            "/ticket/getTicketsByPId/"+$("#pId").val()
+        ).then(function (response) {
+            var json = response.data.data;
+            var len = json.length;
+            price=json[0].ticketPrice;
+            var rowSet = new Array(len);
+            var colSet = new Array(len);
+            for (var i = 0; i < len; i++) {
+                rowSet.push(json[i].row);
+                colSet.push(json[i].col);
+            }
+            var rowlen = rowSet.pop();
+            var collen = colSet.pop();
+            seatStr = getString(rowlen, collen, json);
+            var badArr = getBadString(rowlen, collen, json);
+            createSeat(seatStr, badArr, rowlen, collen);
+        })
+    })
+    // 此处为示例，具体请自行完成
+    function createSeat(seatStr, badArr, row, col) {
+        //模拟座位为一个二维数组，每点击一次二维数组的值加1来判断对于选定区域是否去除
+        var num = new Array(row + 1);
+        for (var i = 0; i < num.length; i++) {
+            num[i] = new Array(col + 1).fill(0);
+        }
+        $(document).ready(function() {
+            var $cart = $('#selected-seats'), //座位区
+                $counter = $('#counter'), //票数
+                $total = $('#total'); //总计金额
+            var sc = $('#seat-map').seatCharts({
+                map: seatStr,
+                legend : { //定义图例
+                    node : $('#legend'),
+                    items : [
+                        [ 'a', 'available', '可选座' ],
+                        [ 'a', 'unavailable', '已售出']
+                    ]
+                },
+                click: function () { //点击事件
+                    if (this.status() == 'available') { //可选座
+                        $('<li>'+(this.settings.row+1)+'排'+this.settings.label+'座</li>')
+                            .attr('id', 'cart-item-'+this.settings.id)
+                            .data('seatId', this.settings.id)
+                            .appendTo($cart);
+                        $counter.text(sc.find('selected').length+1);
+                        $total.text(recalculateTotal(sc)+price);
+                        return 'selected';
+                    } else if (this.status() == 'selected') { //已选中
+                                                              //更新数量
+                        $counter.text(sc.find('selected').length-1);
+                        //更新总计
+                        $total.text(recalculateTotal(sc)-price);
+                        //删除已预订座位
+                        $('#cart-item-'+this.settings.id).remove();
+                        //可选座
+                        return 'available';
+                    } else if (this.status() == 'unavailable') { //已售出
+                        return 'unavailable';
+                    } else {
+                        return this.style();
+                    }
+                }
+            });
+            //已售出的座位
+            sc.get(badArr).status('unavailable');
         });
-        //已售出的座位
-        sc.get(['3_1', '3_2', '4_8']).status('unavailable');
-    });
-
-    //计算总金额
-    function recalculateTotal(sc) {
-        var total = 0;
-        sc.find('selected').each(function () {
-            total += price;
-        });
-        return total;
+//计算总金额
+        function recalculateTotal(sc) {
+            var total = 0;
+            sc.find('selected').each(function () {
+                total += price;
+            });
+            return total;
+        }
+            layui.use(['form'], function () {
+                var form = layui.form,
+                    layer = layui.layer,
+                    $ = layui.$;
+                function hintError(data) {
+                    layer.msg(data, {
+                        icon: 5,
+                        time: 1000,
+                        end: function () {
+                            $("#submit").removeAttr("disabled", "disabled").removeClass("layui-btn-disabled");
+                            form.val("formTest", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                                "hName": "", // "name": "value"
+                            });
+                        }
+                    });
+                    return false;
+                }
+                function hint(data) {
+                    layer.msg(data, {
+                        icon: 1,
+                        time: 1000,
+                        end: function () {
+                            parent.refresh();//刷新到表格
+                            // 关闭弹出层
+                            var iframeIndex = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(iframeIndex);
+                        }
+                    });
+                    return false;
+                }
+                $("#submit").click(function () {
+                    $("#submit").attr("disabled", "disabled").addClass("layui-btn-disabled");
+                    var data = JSON.stringify(getSeat());
+                    var url = '/seat/updateSeats';
+                    axios({
+                        // 请求方法
+                        method: 'POST',
+                        // url
+                        url: url,
+                        headers: {
+                            'Content-Type': "application/json;charset=UTF-8"
+                        },
+                        // url参数
+                        // 请求体参数
+                        data: data
+                    }).then(response=>{
+                        var data = response.data;
+                        if (data == "修改失败")
+                            hintError(data);
+                        else
+                            hint(data);
+                    })
+                })
+            });
+            //已售出的座位或已卖出的座位
     }
 </script>
 </body>

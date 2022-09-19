@@ -71,4 +71,9 @@ public class PageJump {
         model.addAttribute("MId",mid);
         return "user/movie_plan";
     }
+    @GetMapping("/butTicket/{pId}")
+    public String l(Model model,@PathVariable("pId") Integer pId){
+        model.addAttribute("pId",pId);
+        return "user/buy_ticket";
+    }
 }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 @Service
 @Transactional
@@ -31,9 +32,10 @@ public class SeatServiceImpl implements SeatService {
             seats.get(i).setId(id);
         }
         int ticketResult = 0;
+        int seatResult = seatMapper.updateSeats(seats);
         if (ticketMapper.getTicketBySeats(seats)>0){  //表里有要修改的数据
             ticketResult =ticketMapper.updateTicket(seats);
         }
-        return seatMapper.updateSeats(seats)+ticketResult;
+        return seatResult+ticketResult;
     }
 }
