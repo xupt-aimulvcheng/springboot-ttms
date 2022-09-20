@@ -22,7 +22,7 @@ public class PlanServiceImplTest {
 private PlanService planService;
     @Test
     public void getPlanByMIdAndTime() {
-        List<Plan> plan = planService.getPlanByMIdAndTime(String.valueOf(3), 0);
+        List<Plan> plan = planService.getPlanByMIdAndTime(String.valueOf(3), 1);
         for (Plan plan1 : plan) {
             log.info(String.valueOf(plan1));
         }
