@@ -25,6 +25,12 @@
             update ticket set ticket_status = #{seat.status} where seat_id = #{seat.id}
         </foreach>
     </update>
+    <update id="LockTicket">
+        <foreach collection="seats" item="seat" separator=";">
+            update ticket set ticket_status = 2,ticket_locktime = now()
+            where   plan_id in #{pId} and seat_id in (select id from seat where seat_row = #{seat.row} and seat_column = #{seat.col})
+        </foreach>
+    </update>
     <delete id="deleteTicket">
         delete from ticket where ticket.plan_id in
         <foreach collection="list" item="plan" open="(" close=")" separator=",">

@@ -50,7 +50,7 @@
     <update id="offline">
         update plan set status = '待上线' where id in
         <foreach collection="plans" item="plan" open="(" close=")" separator=",">
-              #{plan.id}
+            #{plan.id}
         </foreach>
     </update>
     <delete id="deletePlanByIds">
@@ -120,11 +120,13 @@
         where id = #{id};
     </select>
     <select id="getAllByHId" resultType="java.lang.Integer">
-        select count(*) from plan where h_id in #{hId}
+        select count(*)
+        from plan
+        where h_id in #{hId}
     </select>
     <select id="getPlanByMIdAndTime" resultMap="BaseResultMap">
         select p_startTime,price,(select h_name from hall where h_id = hall.id) as h_name,id
-               from plan
+        from plan
         <where>
             plan.status = '已上线'
             <if test="mId!=null and mId!=''">
@@ -137,5 +139,12 @@
                 and p_startTime >= #{time}
             </if>
         </where>
+    </select>
+    <select id="getPlanByPId" resultMap="BaseResultMap">
+        select p_startTime,p.h_id,
+               (select m_name from movie m where m.id = p.m_id) as m_name,
+               (select h_name from hall h where h.id = p.h_id)  as h_name
+        from plan p
+        where p.id in (#{pId});
     </select>
 </mapper>

@@ -5,7 +5,7 @@ public class Seat {
     private Integer studioId;
     private Integer row;
     private Integer col;
-    private Integer status = 1; //1代表完好，0代表损坏，2代表已购买
+    private Integer status = 1; //1代表完好，0代表损坏，9代表已购买
 
     private Hall hall;
 

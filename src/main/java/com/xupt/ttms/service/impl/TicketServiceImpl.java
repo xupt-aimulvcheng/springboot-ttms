@@ -5,6 +5,7 @@ import com.xupt.ttms.mapper.TicketMapper;
 import com.xupt.ttms.pojo.Plan;
 import com.xupt.ttms.pojo.Seat;
 import com.xupt.ttms.pojo.Ticket;
+import com.xupt.ttms.pojo.TicketParam;
 import com.xupt.ttms.service.SeatService;
 import com.xupt.ttms.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,5 +79,16 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public List<Ticket> getTicketsByPId(String pId) {
         return ticketMapper.getTicketsByPId(pId);
+    }
+
+    /**
+     * 锁定票
+     * @param pId
+     * @param seat
+     * @return
+     */
+    @Override
+    public int LockTicket(String pId, List<Seat> seat) {
+        return ticketMapper.LockTicket(pId,seat);
     }
 }

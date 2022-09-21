@@ -112,6 +112,11 @@ public class PlanServiceImpl implements PlanService {
         return planMapper.getPlanByMIdAndTime(mId,Time,nextTime);
     }
 
+    @Override
+    public Plan getPlanByPId(String pId) {
+        return planMapper.getPlanByPId(pId);
+    }
+
     /**
      * 判断一个时间段的集合是否在规定的时间段
      *

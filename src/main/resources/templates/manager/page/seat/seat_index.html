@@ -450,12 +450,11 @@
                 $("#submit").click(function () {
                     $("#submit").attr("disabled", "disabled").addClass("layui-btn-disabled");
                     var data = JSON.stringify(getSeat());
-                    var url = '/seat/updateSeats';
                     axios({
                         // 请求方法
                         method: 'POST',
                         // url
-                        url: url,
+                        url: '/seat/updateSeats',
                         headers: {
                             'Content-Type': "application/json;charset=UTF-8"
                         },

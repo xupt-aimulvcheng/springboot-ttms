@@ -12,10 +12,11 @@
     <link rel="stylesheet" th:href="@{/main/css/bootstrap.css}"/>
     <link rel="stylesheet" th:href="@{/main/css/theme.css}"/>
     <link rel="stylesheet" th:href="@{/main/css/seats.css}"/>
+    <link rel="stylesheet" th:href="@{/main/layui/css/layui.css}"/>
     <style type="text/css">
         .demo {
             width: 800px;
-            margin: 40px auto 0 20px;
+            margin: 40px auto 0 28px;
             min-height: 450px;
         }
 
@@ -168,21 +169,56 @@
             <!--座位布局-->
             <div id="main">
                 <h2 class="top_title">在线选座订座</h2>
+                <div class="hint" style="    margin-top: 28px;
+    margin-left: 170px;
+">
+                    <span style="display: inline-block;
+    font-size: 16px;
+    color: #666;
+    height: 26px;
+    line-height: 26px;
+    padding-left: 28px;
+    background-repeat: no-repeat;
+    margin-right: 18px;">已选座位</span>
+                    <span style="background-color: #ff5722;width: 25px;height: 25px;border-radius: 5px;display: inline-block"></span>
+                    <span style="display: inline-block;
+    font-size: 16px;
+    color: #666;
+    height: 26px;
+    line-height: 26px;
+    padding-left: 28px;
+    background-repeat: no-repeat;
+    margin-right: 18px;">可选座位</span>
+                    <span style="background-color: #B9DEA0;;width: 25px;height: 25px;border-radius: 5px;display: inline-block"></span>
+                    <span style="display: inline-block;
+    font-size: 16px;
+    color: #666;
+    height: 26px;
+    line-height: 26px;
+    padding-left: 28px;
+    background-repeat: no-repeat;
+    margin-right: 18px;">禁选座位</span>
+                    <span style="background-color: #472B34;;width: 25px;height: 25px;border-radius: 5px;display: inline-block"></span>
+                </div>
                 <div class="demo">
                     <div id="seat-map">
                         <div class="front">银幕中央</div>
                     </div>
                     <div class="booking-details">
-                        <p>剧目：<span id="playname">我和我的祖国</span></p>
-                        <p>演出厅：<span id="studioname">VIP厅</span></p>
+                        <p>剧目：<span id="playname"></span></p>
+                        <p>演出厅：<span id="studioname"></span></p>
                         <p>时间：<span id="time">10月14日 10:00</span></p>
+                        <p>票价：<span id="price"></span></p>
+                        <hr>
                         <p>已选座位：</p>
                         <ul id="selected-seats">
                             <span id="error"></span>
                         </ul>
+                        <hr>
                         <p>票数：<span id="counter" style="color: red">0</span></p>
                         <p>总计：<b>￥<span id="total" style="color: red">0</span></b></p>
                         <br>
+                        <hr>
                         <button type="button" class="btn btn-danger" id="submit">购买</button>
                     </div>
                     <div style="clear: both"></div>
@@ -190,6 +226,7 @@
                 <br/>
             </div>
             <input type="hidden" id="pId" th:value="${pId}">
+            <input type="hidden" id="hId" name="hId">
         </div>
     </div>
 </div>
@@ -202,6 +239,7 @@
 <script th:src="@{/main/js/seat.js}"></script>
 <script th:src=" @{/main/js/axios.min.js}"></script>
 <script th:src=" @{/main/js/vue.js}"></script>
+<script th:src=" @{/main/js/day.js}"></script>
 <script type="text/javascript" th:src="@{/main/layui/layui.js}"></script>
 <script type="text/javascript">
     layui.use(['form'], function () {
@@ -209,6 +247,13 @@
             layer = layui.layer,
             $ = layui.$;
         var seatStr = [];
+        axios.post("/plan/getPlanByPId/" + $("#pId").val()).then(function (response) {
+            let data = response.data.data;
+            $("#playname").html(data.mName);
+            $("#studioname").html(data.hName);
+            $("#time").html(dayjs(data.startDate).format("MM月DD日 HH:mm"));
+            $("#hId").val(data.hId);
+        })
 
         function getString(row, col, json) {
             var seatArr = [];
@@ -249,7 +294,7 @@
                             str += "a";
                         } else if (json[k].status == 2 && json[k].row == i && json[k].col == j) {
                             str += "b";
-                        } else if (json[k].status == 0 && json[k].row == i && json[k].col == j) {
+                        } else if (json[k].status != 1 && json[k].row == i && json[k].col == j) {
                             str += "a";
                             badStr += i + "_" + j;
                             badArray.push(badStr);
@@ -274,6 +319,7 @@
                 var json = response.data.data;
                 var len = json.length;
                 price = json[0].ticketPrice;
+                $("#price").html('<span class="layui-icon layui-icon-rmb" style="color: red;margin-right: 7px"></span>' + price + "/张")
                 var rowSet = new Array(len);
                 var colSet = new Array(len);
                 for (var i = 0; i < len; i++) {
@@ -301,7 +347,6 @@
                 if (parseInt($("#counter").text()) == 0) {
                     $("#error").text("最多只能购买6张票")
                 }
-                console.log(parseInt($("#counter").text()));
                 var sc = $('#seat-map').seatCharts({
                     map: seatStr,
                     legend: { //定义图例
@@ -320,6 +365,10 @@
                         if (this.status() == 'available' && parseInt($("#counter").text()) < 6) { //可选座
                             $('<li>' + (this.settings.row + 1) + '排' + this.settings.label + '座</li>')
                                 .attr('id', 'cart-item-' + this.settings.id)
+                                .attr('row', this.settings.row + 1)
+                                .attr('selected', 'true')
+                                .attr('col', this.settings.label)
+                                .attr("seat_status", "0")
                                 .data('seatId', this.settings.id)
                                 .appendTo($cart);
                             $counter.text(sc.find('selected').length + 1);
@@ -391,10 +440,62 @@
             return false;
         }
 
+        function getSeat() {
+            var jsonArr = [];
+            var nodes = $("#selected-seats").children("li");//所有选中的节点
+            nodes.each(function (index, node) {
+                for (var i = 0; i <= index; i++) {
+                    var row = $(node).attr("row");
+                    var col = $(node).attr("col");
+                    var json = {
+                        "row": row,
+                        "col": col,
+                    };
+                    jsonArr.push(json);
+                }
+            })
+            return deduplicate(jsonArr);
+        }
+
+        function deduplicate(arr3) {
+            let data = [];
+            arr3.forEach(item => {
+                if (data.length == 0) {
+                    data.push(item);
+                } else {
+                    let isDiff = true;//是否不同
+                    for (let i = 0; i < data.length; i++) {
+                        let dataItem = data[i];
+                        if (dataItem.row == item.row && dataItem.col == item.col) {
+                            /*集合中已经存在相同数据*/
+                            isDiff = false;
+                            break;
+                        }
+                    }
+                    if (isDiff) {
+                        data.push(item);
+                    }
+                }
+            });
+            return data
+        }
+
         $("#submit").click(function () {
             $("#submit").attr("disabled", "disabled").addClass("layui-btn-disabled");
             var data = JSON.stringify(getSeat());
-            var url = '/seat/updateSeats';
+            let pId = parseInt($("#pId").val());
+            axios({
+                // 请求方法
+                method: 'POST',
+                // url
+                url: '/toBill/' + pId,
+                headers: {
+                    'Content-Type': "application/json;charset=UTF-8"
+                },
+                // url参数
+                // 请求体参数
+                data: data
+            })
         })
     });
 </script>

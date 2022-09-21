@@ -3,6 +3,7 @@ package com.xupt.ttms.mapper;
 import com.xupt.ttms.pojo.Plan;
 import com.xupt.ttms.pojo.Seat;
 import com.xupt.ttms.pojo.Ticket;
+import com.xupt.ttms.pojo.TicketParam;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -25,4 +26,6 @@ public interface TicketMapper {
     int getTicketBySeats(@Param("seats") List<Seat> seats);
 
     List<Ticket> getTicketsByPId(@Param("pId") String pId);
+
+    int LockTicket(@Param("pId") String pId,@Param("seats") List<Seat> seat);
 }

@@ -1,15 +1,26 @@
 package com.xupt.ttms.controller;
 
+import com.xupt.ttms.pojo.Plan;
+import com.xupt.ttms.pojo.Seat;
+import com.xupt.ttms.pojo.TicketParam;
+import com.xupt.ttms.service.PlanService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 /**
  * 完成页面跳转
  */
 @Controller
 public class PageJump {
+    @Autowired
+    private PlanService planService;
     @GetMapping("/")
     public String toLogin(){
         return "index";
@@ -74,6 +85,6 @@ public class PageJump {
     @GetMapping("/butTicket/{pId}")
     public String l(Model model,@PathVariable("pId") Integer pId){
         model.addAttribute("pId",pId);
-        return "user/buy_ticket";
+        return "user/form-step";
     }
 }

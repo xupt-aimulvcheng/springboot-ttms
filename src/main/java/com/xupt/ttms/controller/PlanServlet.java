@@ -80,4 +80,10 @@ public class PlanServlet {
         List<Plan> plans = planService.getPlanByMIdAndTime(MId,Time);
         return ToResult.getResult(plans);
     }
+    @PostMapping("/plan/getPlanByPId/{PId}")
+    @ResponseBody
+    public Result getPlanByPId(@PathVariable("PId") String PId){
+        Plan plan = planService.getPlanByPId(PId);
+        return ToResult.getResult(plan);
+    }
 }

@@ -39,4 +39,6 @@ public interface PlanMapper {
     int getAllByHId(@Param("hId") String hId);
 
     List<Plan> getPlanByMIdAndTime(@Param("mId") String mId,@Param("time") String Time,@Param("nextTime") String nextTime);
+
+    Plan getPlanByPId(@Param("pId") String pId);
 }

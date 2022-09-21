@@ -1,16 +1,12 @@
 package com.xupt.ttms.controller;
 
-import com.xupt.ttms.pojo.Plan;
-import com.xupt.ttms.pojo.Result;
-import com.xupt.ttms.pojo.Ticket;
+import com.xupt.ttms.pojo.*;
 import com.xupt.ttms.service.TicketService;
 import com.xupt.ttms.util.ToResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,5 +28,9 @@ public class TicketServlet {
     public Result getTicketsByPId(@PathVariable("PId") String PId){
         List<Ticket> tickets = ticketService.getTicketsByPId(PId);
         return ToResult.getResult(tickets);
+    }
+    @PostMapping("/LockTicket/{pId}")
+    public void LockTicket( @PathVariable("pId") String pId, @RequestBody List<Seat> seat){
+        ticketService.LockTicket(pId,seat);
     }
 }

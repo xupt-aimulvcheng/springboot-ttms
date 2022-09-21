@@ -1,7 +1,9 @@
 package com.xupt.ttms.service;
 
 import com.xupt.ttms.pojo.Plan;
+import com.xupt.ttms.pojo.Seat;
 import com.xupt.ttms.pojo.Ticket;
+import com.xupt.ttms.pojo.TicketParam;
 
 import java.util.List;
 
@@ -10,4 +12,6 @@ public interface TicketService {
     int insertTicket(List<Plan> plans);
     int deleteTicket(List<Plan> list);
     List<Ticket> getTicketsByPId(String pId);
+
+    int LockTicket(String pId, List<Seat> seat);
 }
