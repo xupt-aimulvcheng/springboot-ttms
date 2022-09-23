@@ -19,8 +19,6 @@ import java.util.List;
  */
 @Controller
 public class PageJump {
-    @Autowired
-    private PlanService planService;
     @GetMapping("/")
     public String toLogin(){
         return "index";
@@ -82,7 +80,7 @@ public class PageJump {
         model.addAttribute("MId",mid);
         return "user/movie_plan";
     }
-    @GetMapping("/butTicket/{pId}")
+    @GetMapping("/buyTicket/{pId}")
     public String l(Model model,@PathVariable("pId") Integer pId){
         model.addAttribute("pId",pId);
         return "user/form-step";

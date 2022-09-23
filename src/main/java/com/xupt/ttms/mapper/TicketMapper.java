@@ -28,4 +28,6 @@ public interface TicketMapper {
     List<Ticket> getTicketsByPId(@Param("pId") String pId);
 
     int LockTicket(@Param("pId") String pId,@Param("seats") List<Seat> seat);
+
+    int UnLockTicket(@Param("pId") String pId,@Param("seats") List<Seat> seat);
 }

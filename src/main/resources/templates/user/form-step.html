@@ -173,37 +173,35 @@
             text-align: center;
             color: white
         }
+        thead {
+            background-color: #f4efef;
+        }
+
+        tbody tr td {
+            text-align: center;
+            padding: 20px 0;
+            color: #333;
+        }
+
+        .test {
+            width: 100%;
+            height: 90px;
+            padding-top: 20px;
+            margin-bottom: 40px;
+            background-color: #d89898;
+            font-size: 18px;
+        }
+
+        .test span {
+            font-size: 2em;
+            color: #472B34;
+        }
+        .test p {
+            font-size: 14px;
+            color: #292820f0;
+        }
     </style>
 </head>
-<style>
-    thead {
-        background-color: #f4efef;
-    }
-
-    tbody tr td {
-        text-align: center;
-        padding: 20px 0;
-        color: #333;
-    }
-
-    #test {
-        width: 100%;
-        height: 90px;
-        padding-top: 20px;
-        margin-bottom: 40px;
-        background-color: #d89898;
-        font-size: 18px;
-    }
-
-    #test span {
-        font-size: 2em;
-        color: #472B34;
-    }
-    #test p {
-        font-size: 14px;
-        color: #292820f0;
-    }
-</style>
 <body class="contact-template">
 <div class="layuimini-container">
     <div class="layuimini-main">
@@ -287,7 +285,7 @@
                             </div>
                             <div>
                                 <div class="layui-form" style="margin: 0 auto;max-width: 1000px;padding-top: 40px;">
-                                    <div id="test"></div>
+                                    <div class="test"></div>
                                     <table class="table table-bordered">
                                         <thead>
                                         <tr>
@@ -356,6 +354,33 @@
                                 </div>
                             </div>
                             <div>
+                                <div class="layui-form" style="margin: 0 auto;max-width: 1000px;padding-top: 40px;">
+                                    <div class="test"></div>
+                                    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                                        <ul class="layui-tab-title">
+                                            <li class="layui-this">微信支付</li>
+                                            <li>支付宝</li>
+                                            <li>账户余额</li>
+                                        </ul>
+                                        <div class="layui-tab-content">
+                                            <div class="layui-tab-item layui-show"><img style="width: 150px;height: 200px;" th:src="@{/main/images/wechat.jpg}" alt=""></div>
+                                            <div class="layui-tab-item"><img style="width: 150px;height: 200px;" th:src="@{/main/images/zfb.jpg}" alt=""></div>
+                                            <div class="layui-tab-item">内容3</div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block" style="margin-left: 280px;margin-top: 70px;">
+                                            <button style="margin-left: 100px;" class="layui-btn" lay-submit lay-filter="formStep3">
+                                                &emsp;确认订单&emsp;
+                                            </button>
+                                            <div style="    margin-left: 487px;margin-top: 11px;">
+                                            <span> 总价：</span><span class="total"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
                                 <div style="text-align: center;margin-top: 90px;">
                                     <i class="layui-icon layui-circle"
                                        style="color: white;font-size:30px;font-weight:bold;background: #52C41A;padding: 20px;line-height: 80px;">&#xe605;</i>
@@ -380,13 +405,14 @@
 </div>
 </body>
 <script type="text/javascript">
-    layui.use(['form', 'util', 'step', 'table'], function () {
+    layui.use(['form', 'util', 'step', 'table','element'], function () {
         var form = layui.form,
             layer = layui.layer,
             $ = layui.$,
             step = layui.step,
             util = layui.util,
-            table = layui.table
+            table = layui.table,
+            element = layui.element;
         var seatStr = [];
         axios.post("/plan/getPlanByPId/" + $("#pId").val()).then(function (response) {
             let data = response.data.data;
@@ -431,12 +457,7 @@
             for (var i = 1; i <= row; i++) {
                 for (var j = 1; j <= col; j++) {
                     for (var k = 0; k < json.length; k++) {
-                        if (json[k].status == 1 && json[k].row == i && json[k].col == j) {
-                            str += "a";
-                        } else if (json[k].status == 2 && json[k].row == i && json[k].col == j) {
-                            str += "b";
-                        } else if ((json[k].status != 1 || json[k].status != 2) && json[k].row == i && json[k].col == j) {
-                            str += "a";
+                        if (json[k].status != 1 && json[k].row == i && json[k].col == j) {
                             badStr += i + "_" + j;
                             badArray.push(badStr);
                             badStr = "";
@@ -450,6 +471,7 @@
                 badStr = "";
                 str = "";
             }
+            console.log(badArray)
             return badArray;
         }
 
@@ -617,7 +639,7 @@
             clearTimeout(timerout);//每次调用倒计时时重置
             util.countdown(endTime, serverTime, function(date, serverTime, timer){
                 timerout=timer;
-                layui.$('#test').html('请您在' + '<span>' + date[2] + '</span>' + '分' + '<span>' + date[3] + '</span>' + '秒' + "以内完成付款" + '<br>' + '<p>否则订单自动取消，如遇订单问题请致电110进行查询</p>');
+                layui.$('.test').html('请您在' + '<span>' + date[2] + '</span>' + '分' + '<span>' + date[3] + '</span>' + '秒' + "以内完成付款" + '<br>' + '<p>否则订单自动取消，如遇订单问题请致电110进行查询</p>');
                 if (serverTime == endTime) {
                     layer.open({
                         title: '<div style="color:#44ff00">完成</div>'
@@ -626,10 +648,6 @@
                 }
             });
         }
-        /*
-        获取选择的座位并转化为二维数组
-        eg:'1排2座3排4座5排6座'转化
-        */
         function getSelected(str) {
             let arr = [];
             for (let i = 0; i < str.length; i++) {
@@ -651,7 +669,7 @@
             for (i = 0;i < arr.length;) {
                 newArr.push(arr.slice(i,i += n))
             }
-            return newArr
+            return newArr;
         }
         form.on('submit(formStep)', function (data) {
             if ($("#selected-seats").children("li").length == 0) {
@@ -663,97 +681,87 @@
                 });
                 return;
             }
-            let sel = $("#selected-seats").find('li').text();
-            let arr = getSelected(sel);
-            for (let i = 0; i < arr.length; i++) {
-                let flag = i+1;
-                $(".seats").append('<li style="float: left;margin-left: 28px;"><i style="color: #4e4e4e;font-size: 18px;margin: 0 2px;">' + arr[i][0] + '</i><span>排</span><i style="font-size: 18px;margin: 0 2px;">' + arr[i][1] + '</i><span>座</span></li>')
-                if (flag%2==0){
-                    $(".seats").append('<br><br>')
-                }
-            }
-            if (count==0) {
-                let serverTime = new Date().getTime();
-                countDown(serverTime);
-            }
-            count++;
-            step.next('#stepForm');
-            let total = $("#total").text()
-            $(".total").html('<span class="layui-icon layui-icon-rmb" style="color: red;"></span>' +'<span style="color: red;font-size: 27px;margin-left: 4px;">'+ total+'</span>')
             var data = JSON.stringify(getSeat());
             let pId = parseInt($("#pId").val());
-            return false;
-        });
-
-
-        form.on('submit(formStep2)', function (data) {
-            console.log(111)
-            step.next('#stepForm');
-            return false;
-        });
-
-        $('.pre').click(function () {
-            $(".seats").children().remove();
-            $("#test").children().remove();
-            step.pre('#stepForm');
-        });
-
-        $('.next').click(function () {
-            step.next('#stepForm');
-        });
-
-        $("#submit").click(function () {
-            $("#submit").attr("disabled", "disabled").addClass("layui-btn-disabled");
-            var data = JSON.stringify(getSeat());
-            let pId = parseInt($("#pId").val());
-            console.log(111111)
-            var serverTime = new Date().getTime(); //假设为当前服务器时间
-            var endTime = serverTime + 2000 //假设为结束日期
-            // 倒计时60s  serverTime+60000
-            util.countdown(endTime, serverTime, function (date, serverTime, timer) {
-                console.log(date)
-                console.log(serverTime)
-                console.log(timer)
-                var str = date[0] + '天' + date[1] + '时' + date[2] + '分' + date[3] + '秒';
-                layui.$('#test').html('距离考试结束还有：' + str);
-                if (serverTime == endTime) {
-                    layer.open({
-                        title: '<div style="color:#44ff00">完成</div>'
-                        , content: '增加成功'
-                    });
-                }
-
-
-            });
-            /*axios({
+            axios({
                 method: 'POST',
                 url: '/LockTicket/' + pId,
                 headers: {
                     'Content-Type': "application/json;charset=UTF-8"
                 },
                 data: data
-            }.then(function (res) {
+            }).then(function (res) {
                     let json = res.data.data;
                     if (json == '锁定成功'){
-                        axios({
-                                method: 'POST',
-                                url: '/LockTicket/' + pId,
-                                headers: {
-                                    'Content-Type': "application/json;charset=UTF-8"
-                                },
-                                data: data
-                            }.then(function (res) {
-                                let data = res.data.data;
-                                if (data == '锁定成功'){
-
-                                }
-                            })
-                        )
+                        let sel = $("#selected-seats").find('li').text();
+                        let arr = getSelected(sel);
+                        for (let i = 0; i < arr.length; i++) {
+                            let flag = i+1;
+                            $(".seats").append('<li style="float: left;margin-left: 28px;"><i style="color: #4e4e4e;font-size: 18px;margin: 0 2px;">' + arr[i][0] + '</i><span>排</span><i style="font-size: 18px;margin: 0 2px;">' + arr[i][1] + '</i><span>座</span></li>')
+                            if (flag%2==0){
+                                $(".seats").append('<br><br>')
+                            }
+                        }
+                        if (count==0) {
+                            let serverTime = new Date().getTime();
+                            countDown(serverTime);
+                        }
+                        count++;
+                        step.next('#stepForm');
+                        let total = $("#total").text();
+                        $(".total").html('<span class="layui-icon layui-icon-rmb" style="color: red;"></span>' +'<span style="color: red;font-size: 27px;margin-left: 4px;">'+ total+'</span>')
+                    }
+                    else {
+                        layer.msg(json, {
+                            icon: 5,
+                            time: 1000,
+                        });
+                        return false;
                     }
                 })
-            )*/
-        })
+            return false;
+        });
 
+
+        form.on('submit(formStep2)', function (data) {
+            layer.confirm("您确定订单没有问题吗？确认后无法修改", function (index) {
+                layer.close(index);
+                step.next('#stepForm');
+                return false;
+            })
+        });
+
+        $('.pre').click(function () {
+            let pId = parseInt($("#pId").val());
+            var data = JSON.stringify(getSeat());
+            axios({
+                method: 'POST',
+                url: '/UnLockTicket/' + pId,
+                headers: {
+                    'Content-Type': "application/json;charset=UTF-8"
+                },
+                data: data
+            }).then(function (res) {
+                let json = res.data.data;
+                if (json == "解除锁定成功"){
+                    $(".seats").children().remove();
+                    $("#test").children().remove();
+                    step.pre('#stepForm');
+                }
+                else {
+                    layer.msg(json, {
+                        icon: 5,
+                        time: 1000,
+                    });
+                    return false;
+                }
+            })
+
+        });
+
+        $('.next').click(function () {
+            step.next('#stepForm');
+        });
 
     });
 </script>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xupt.ttms.mapper.OrderMapper">
+    <resultMap id="BaseResulMap" type="com.xupt.ttms.pojo.Order">
+        <id property="id" column="id"></id>
+        <result property="userId" column="user_id"></result>
+        <result property="desc" column="des"></result>
+        <result property="amount" column="amount"></result>
+        <result property="status" column="status"></result>
+        <result property="orderNo" column="order_no"></result>
+        <result property="generateTime" column="generate_time"></result>
+        <result property="purchaseTime" column="purchase_time"></result>
+    </resultMap>
+    <insert id="insert">
+        insert into `order`
+        values (null, #{order.orderNo}, #{order.status}, #{order.amount}, #{order.desc}, #{order.userId},now(),null);
+    </insert>
+
+    <update id="updateByPrimaryKey">
+        update `order` set
+        <if test="record.status!=null">
+            status = #{record.status}
+        </if>
+        where id = #{record.id}
+    </update>
+    <delete id="deleteByPrimaryKey">
+        delete
+        from `order`
+        where id in #{id};
+    </delete>
+    <select id="selectByPrimaryKey" resultMap="BaseResulMap">
+        select *
+        from `order`
+        where id = #{id};
+    </select>
+</mapper>

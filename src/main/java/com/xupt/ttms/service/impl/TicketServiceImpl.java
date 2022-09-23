@@ -24,6 +24,7 @@ public class TicketServiceImpl implements TicketService {
     @Autowired
     private PlanMapper planMapper;
 
+//    private static int affect;
     /**
      * 通过某个演出计划得到单个的票集合
      * @param plans  待上线的演出计划
@@ -88,7 +89,12 @@ public class TicketServiceImpl implements TicketService {
      * @return
      */
     @Override
-    public int LockTicket(String pId, List<Seat> seat) {
+    public synchronized int LockTicket(String pId, List<Seat> seat) {
         return ticketMapper.LockTicket(pId,seat);
+    }
+
+    @Override
+    public synchronized int UnLockTicket(String pId, List<Seat> seat) {
+        return ticketMapper.UnLockTicket(pId,seat);
     }
 }

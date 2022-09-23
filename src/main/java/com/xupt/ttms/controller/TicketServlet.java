@@ -1,12 +1,16 @@
 package com.xupt.ttms.controller;
 
-import com.xupt.ttms.pojo.*;
+import com.xupt.ttms.pojo.Plan;
+import com.xupt.ttms.pojo.Result;
+import com.xupt.ttms.pojo.Seat;
+import com.xupt.ttms.pojo.Ticket;
 import com.xupt.ttms.service.TicketService;
 import com.xupt.ttms.util.ToResult;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -30,7 +34,12 @@ public class TicketServlet {
         return ToResult.getResult(tickets);
     }
     @PostMapping("/LockTicket/{pId}")
-    public void LockTicket( @PathVariable("pId") String pId, @RequestBody List<Seat> seat){
-        ticketService.LockTicket(pId,seat);
+    public Result LockTicket( @PathVariable("pId") String pId, @RequestBody List<Seat> seat){
+        return ToResult.getResult(ticketService.LockTicket(pId,seat)>0?"锁定成功":"锁定失败");
+    }
+
+    @PostMapping("/UnLockTicket/{pId}")
+    public Result UnLockTicket(@PathVariable("pId") String pId, @RequestBody List<Seat> seat) {
+        return ToResult.getResult(ticketService.UnLockTicket(pId, seat) > 0 ? "解除锁定成功" : "抱歉服务器出现问题请刷新页面重试");
     }
 }

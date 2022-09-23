@@ -18,4 +18,5 @@ public class Ticket {
     //对应座位的行列号以便前端展示
     private Integer row;
     private Integer col;
+    private Integer orderId;
 }

@@ -14,4 +14,6 @@ public interface TicketService {
     List<Ticket> getTicketsByPId(String pId);
 
     int LockTicket(String pId, List<Seat> seat);
+
+    int UnLockTicket(String pId, List<Seat> seat);
 }

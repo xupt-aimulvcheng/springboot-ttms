@@ -1,65 +1,19 @@
 package com.xupt.ttms.pojo;
 
 import com.xupt.ttms.util.ToResult;
+import lombok.Data;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-
+@Data
+@Component
 public class Order {
     private Integer id;
-    private String orderNo;
-    private String status;// "待支付"，"已支付"，“已退单
+    private String orderNo;//订单号
+    private String status="0";// 0:"待支付"，1:"已支付"，2:“用户已退票“,3:"售票员已退票"
     private BigDecimal amount;//金额
     private String desc;
-    private Integer ticketId;// ”对应票id"
-
-    public Integer getId() {
-        return id;
-    }
-
-    public Order() {
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getOrderNo() {
-        return orderNo;
-    }
-
-    public void setOrderNo() {
-        this.orderNo = ToResult.getUUID();
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public Integer getTicketId() {
-        return ticketId;
-    }
-
-    public void setTicketId(Integer ticketId) {
-        this.ticketId = ticketId;
-    }
+    private Integer userId;
+    private String purchaseTime;
+    private String generateTime;
 }

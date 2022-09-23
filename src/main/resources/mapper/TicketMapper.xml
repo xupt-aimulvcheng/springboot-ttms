@@ -13,6 +13,7 @@
         <result column="ticket_locktime" property="ticketLockTome"></result>
         <result column="seat_column" property="col"></result>
         <result column="seat_row" property="row"></result>
+        <result column="order_id" property="orderId"></result>
     </resultMap>
     <insert id="insertTicker">
         insert into ticket (seat_id, plan_id, ticket_price, ticket_status) values
@@ -28,7 +29,13 @@
     <update id="LockTicket">
         <foreach collection="seats" item="seat" separator=";">
             update ticket set ticket_status = 2,ticket_locktime = now()
-            where   plan_id in #{pId} and seat_id in (select id from seat where seat_row = #{seat.row} and seat_column = #{seat.col})
+            where   plan_id in (#{pId}) and seat_id in (select id from seat where seat_row = #{seat.row} and seat_column = #{seat.col})
+        </foreach>
+    </update>
+    <update id="UnLockTicket">
+        <foreach collection="seats" item="seat" separator=";">
+            update ticket set ticket_status = 1,ticket_locktime = null
+            where   plan_id in (#{pId}) and seat_id in (select id from seat where seat_row = #{seat.row} and seat_column = #{seat.col})
         </foreach>
     </update>
     <delete id="deleteTicket">
