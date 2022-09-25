@@ -2,6 +2,8 @@ package com.xupt.ttms.service;
 
 import com.xupt.ttms.pojo.User;
 
+import java.math.BigDecimal;
+
 public interface UserService {
     User getUserByUsername(String username);
 
@@ -10,4 +12,6 @@ public interface UserService {
     int register(User user);
 
     int updateUserByUsernameAndPhone(String username, String password, String phone);
+
+    int recharge(BigDecimal balance,String username);
 }

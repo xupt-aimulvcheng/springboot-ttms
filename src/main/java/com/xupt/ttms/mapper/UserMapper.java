@@ -5,6 +5,7 @@ import com.xupt.ttms.pojo.UserExample;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 @Mapper
 public interface UserMapper {
@@ -95,4 +96,10 @@ public interface UserMapper {
      * @mbggenerated Fri Jun 24 12:02:20 CST 2022
      */
     int updateByPrimaryKey(User record);
+
+    int recharge(@Param("amount") BigDecimal amount,@Param("username") String username);
+
+    List<User> select(@Param("username") String username);
+
+    int payOrder(@Param("amount") BigDecimal amount,@Param("username") String username);
 }

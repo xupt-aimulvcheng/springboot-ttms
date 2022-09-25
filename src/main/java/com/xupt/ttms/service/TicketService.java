@@ -3,7 +3,6 @@ package com.xupt.ttms.service;
 import com.xupt.ttms.pojo.Plan;
 import com.xupt.ttms.pojo.Seat;
 import com.xupt.ttms.pojo.Ticket;
-import com.xupt.ttms.pojo.TicketParam;
 
 import java.util.List;
 

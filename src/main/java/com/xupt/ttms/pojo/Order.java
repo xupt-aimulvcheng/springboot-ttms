@@ -2,11 +2,15 @@ package com.xupt.ttms.pojo;
 
 import com.xupt.ttms.util.ToResult;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.List;
+
 @Data
 @Component
+@ToString
 public class Order {
     private Integer id;
     private String orderNo;//订单号
@@ -16,4 +20,5 @@ public class Order {
     private Integer userId;
     private String purchaseTime;
     private String generateTime;
+    private List<Seat> seats;
 }

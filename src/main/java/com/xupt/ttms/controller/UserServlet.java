@@ -3,8 +3,10 @@ package com.xupt.ttms.controller;
 import com.ramostear.captcha.HappyCaptcha;
 import com.ramostear.captcha.support.CaptchaType;
 import com.xupt.ttms.pojo.Code;
+import com.xupt.ttms.pojo.Result;
 import com.xupt.ttms.pojo.User;
 import com.xupt.ttms.service.UserService;
+import com.xupt.ttms.util.ToResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -81,7 +83,6 @@ public class UserServlet {
             code.setInfo(error);
             return code;
         }
-        System.out.println(user+"1111111111111111111111");
         int i = userService.register(user);
         if (i == 1) {
             code.setInfo("注册成功");
@@ -130,7 +131,15 @@ public class UserServlet {
     public void happyCaptchaCommon(HttpServletRequest request, HttpServletResponse response) {
         HappyCaptcha.require(request, response).type(CaptchaType.DEFAULT).build().finish();
     }
-
-
+    @PostMapping("/user/getBalance/{username}")
+    @ResponseBody
+    public Result getBalance(@PathVariable String username){
+        return ToResult.getResult(userService.getUserByUsername(username).getBalance());
+    }
+    @PostMapping("/user/recharge")
+    @ResponseBody
+    public Result recharge(@RequestBody User user,@CookieValue("username") String username){
+        return ToResult.getResult(userService.recharge(user.getBalance(),username)>0?"充值成功":"充值失败");
+    }
 
 }

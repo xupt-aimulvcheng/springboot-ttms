@@ -38,6 +38,12 @@
             where   plan_id in (#{pId}) and seat_id in (select id from seat where seat_row = #{seat.row} and seat_column = #{seat.col})
         </foreach>
     </update>
+    <update id="updateOrderNo">
+        <foreach collection="seats" item="seat" separator=";">
+            update ticket set order_id = #{orderId}
+            where   plan_id in (#{pId}) and seat_id in (select id from seat where seat_row = #{seat.row} and seat_column = #{seat.col})
+        </foreach>
+    </update>
     <delete id="deleteTicket">
         delete from ticket where ticket.plan_id in
         <foreach collection="list" item="plan" open="(" close=")" separator=",">

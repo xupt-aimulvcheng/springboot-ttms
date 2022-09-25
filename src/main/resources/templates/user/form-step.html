@@ -173,6 +173,7 @@
             text-align: center;
             color: white
         }
+
         thead {
             background-color: #f4efef;
         }
@@ -196,9 +197,17 @@
             font-size: 2em;
             color: #472B34;
         }
+
         .test p {
             font-size: 14px;
             color: #292820f0;
+        }
+
+        #stepForm {
+            height: 800px !important;
+            margin: 0px auto !important;
+            width: 100% !important;
+            background-color: transparent !important;
         }
     </style>
 </head>
@@ -208,7 +217,7 @@
         <div class="layui-fluid">
             <div class="layui-card">
                 <div class="layui-card-body" style="padding-top: 40px;">
-                    <div class="layui-carousel" id="stepForm" lay-filter="stepForm" style="margin: 0 auto;">
+                    <div class="layui-carousel" id="stepForm" lay-filter="stepForm">
                         <div carousel-item style="height: 800px">
                             <div class="main-page clearfix">
                                 <div class="container">
@@ -251,7 +260,7 @@
                                                 <div id="seat-map">
                                                     <div class="front">银幕中央</div>
                                                 </div>
-                                                <div class="booking-details">
+                                                <div class="booking-details" style="height: 500px;">
                                                     <p>电影：<span class="playname"></span></p>
                                                     <p>演出厅：<span class="studioname"></span></p>
                                                     <p>时间：<span class="time"></span></p>
@@ -263,7 +272,9 @@
                                                     </ul>
                                                     <hr>
                                                     <p>票数：<span id="counter" style="color: red">0</span></p>
-                                                    <p>总计：<b><span class="layui-icon layui-icon-rmb" style="color: red;margin-right: 7px"></span><span id="total" style="color: red">0</span></b></p>
+                                                    <p>总计：<b><span class="layui-icon layui-icon-rmb"
+                                                                     style="color: red;margin-right: 7px"></span><span
+                                                            id="total" style="color: red">0</span></b></p>
                                                     <hr>
                                                     <div class="layui-form-item" style="margin-left: -55px;">
                                                         <div class="layui-input-block">
@@ -343,11 +354,12 @@
                                         <div class="layui-input-block" style="margin-left: 280px;margin-top: 70px;">
                                             <button type="button" class="layui-btn layui-btn-primary pre">上一步
                                             </button>
-                                            <button style="margin-left: 100px;" class="layui-btn" lay-submit lay-filter="formStep2">
+                                            <button style="margin-left: 100px;" class="layui-btn" lay-submit
+                                                    lay-filter="formStep2">
                                                 &emsp;确认订单&emsp;
                                             </button>
                                             <div style="    margin-left: 487px;margin-top: 11px;">
-                                            <span> 总价：</span><span class="total"></span>
+                                                <span> 总价：</span><span class="total"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -356,25 +368,41 @@
                             <div>
                                 <div class="layui-form" style="margin: 0 auto;max-width: 1000px;padding-top: 40px;">
                                     <div class="test"></div>
+                                    <div style="    line-height: 24px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+    margin-bottom: 10px;">订单编号：<span class="orderNo"></span></div>
                                     <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
                                         <ul class="layui-tab-title">
                                             <li class="layui-this">微信支付</li>
                                             <li>支付宝</li>
                                             <li>账户余额</li>
                                         </ul>
-                                        <div class="layui-tab-content">
-                                            <div class="layui-tab-item layui-show"><img style="width: 150px;height: 200px;" th:src="@{/main/images/wechat.jpg}" alt=""></div>
-                                            <div class="layui-tab-item"><img style="width: 150px;height: 200px;" th:src="@{/main/images/zfb.jpg}" alt=""></div>
-                                            <div class="layui-tab-item">内容3</div>
+                                        <div class="layui-tab-content" style="margin-left: 180px;">
+                                            <div class="layui-tab-item layui-show"><img
+                                                    style="width: 150px;height: 200px;"
+                                                    th:src="@{/main/images/wechat.jpg}" alt=""></div>
+                                            <div class="layui-tab-item"><img style="width: 150px;height: 200px;"
+                                                                             th:src="@{/main/images/zfb.jpg}" alt="">
+                                            </div>
+                                            <div class="layui-tab-item" style="font-size: 25px">
+                                                <div id="balance"></div>
+                                                <div id="massage"></div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="layui-form-item">
                                         <div class="layui-input-block" style="margin-left: 280px;margin-top: 70px;">
-                                            <button style="margin-left: 100px;" class="layui-btn" lay-submit lay-filter="formStep3">
-                                                &emsp;确认订单&emsp;
+                                            <button id="recharge" class="layui-btn layui-btn-normal">充值
+                                            </button>
+                                            <button style="margin-left: 100px;" class="layui-btn" lay-submit
+                                                    lay-filter="formStep3">
+                                                &emsp;支付&emsp;
                                             </button>
                                             <div style="    margin-left: 487px;margin-top: 11px;">
-                                            <span> 总价：</span><span class="total"></span>
+                                                <span> 总价：</span><span class="total"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -390,7 +418,7 @@
                                     <div style="font-size: 14px;color: #666;margin-top: 20px;">预计两小时到账</div>
                                 </div>
                                 <div style="text-align: center;margin-top: 50px;">
-                                    <button class="layui-btn next">再入一笔</button>
+                                    <button class="layui-btn next lay-submit" lay-filter="formStep4">再入一笔</button>
                                     <button class="layui-btn layui-btn-primary">查看账单</button>
                                 </div>
                             </div>
@@ -400,12 +428,37 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 </body>
+<div id="test4">
+    <div class="layui-form layuimini-form" lay-filter="formTest">
+        <div class="layui-form-item" style="margin-top: 55px;">
+            <label class="layui-form-label required">充值金额</label>
+            <div class="layui-input-block">
+                <input type="text" name="balance" lay-verify="required|money" lay-reqtext="金额不能为空"
+                       placeholder="请输入充值金额" value=""
+                       class="layui-input">
+                <div class="layui-form-item" style="margin-top: 28px;margin-left: -61px;">
+                    <div class="layui-input-block">
+                        <button class="layui-btn layui-btn-normal" id="submit" lay-submit lay-filter="saveBtn">
+                            立即提交
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
-    layui.use(['form', 'util', 'step', 'table','element'], function () {
+
+    function getUserName() {
+        return document.cookie.split(";")[0].split("=")[1];
+    }
+    $("#test4").hide();
+    let orderId;
+    let money;
+    layui.use(['form', 'util', 'step', 'table', 'element'], function () {
         var form = layui.form,
             layer = layui.layer,
             $ = layui.$,
@@ -448,7 +501,7 @@
             return seatArr;
         }
 
-        var price; //票价
+        let price; //票价
         function getBadString(row, col, json) {
             var seatArr = [];
             var badArray = [];
@@ -471,7 +524,6 @@
                 badStr = "";
                 str = "";
             }
-            console.log(badArray)
             return badArray;
         }
 
@@ -566,6 +618,7 @@
             //已售出或座位损坏的座位
 
         }
+
         let count = 0;//用于验证用户第几次点击来防止倒计时混乱
 
         function recalculateTotal(sc) {
@@ -637,8 +690,8 @@
             var endTime = serverTime + 1680000 //假设为结束日期
             var timerout;//定义全局变量接收timer参数
             clearTimeout(timerout);//每次调用倒计时时重置
-            util.countdown(endTime, serverTime, function(date, serverTime, timer){
-                timerout=timer;
+            util.countdown(endTime, serverTime, function (date, serverTime, timer) {
+                timerout = timer;
                 layui.$('.test').html('请您在' + '<span>' + date[2] + '</span>' + '分' + '<span>' + date[3] + '</span>' + '秒' + "以内完成付款" + '<br>' + '<p>否则订单自动取消，如遇订单问题请致电110进行查询</p>');
                 if (serverTime == endTime) {
                     layer.open({
@@ -648,6 +701,7 @@
                 }
             });
         }
+
         function getSelected(str) {
             let arr = [];
             for (let i = 0; i < str.length; i++) {
@@ -656,18 +710,19 @@
                 }
             }
             const m = 2;
-            const n = arr.length/2;
+            const n = arr.length / 2;
             let result = new Array(n);
             for (let i = 0; i < m; i++) {
-                result[i]=new Array(m);
+                result[i] = new Array(m);
             }
-            result=spArray(2,arr);
+            result = spArray(2, arr);
             return result;
         }
-        var spArray = function(n,arr){
-            var newArr = [],i;
-            for (i = 0;i < arr.length;) {
-                newArr.push(arr.slice(i,i += n))
+
+        var spArray = function (n, arr) {
+            var newArr = [], i;
+            for (i = 0; i < arr.length;) {
+                newArr.push(arr.slice(i, i += n))
             }
             return newArr;
         }
@@ -691,45 +746,157 @@
                 },
                 data: data
             }).then(function (res) {
-                    let json = res.data.data;
-                    if (json == '锁定成功'){
-                        let sel = $("#selected-seats").find('li').text();
-                        let arr = getSelected(sel);
-                        for (let i = 0; i < arr.length; i++) {
-                            let flag = i+1;
-                            $(".seats").append('<li style="float: left;margin-left: 28px;"><i style="color: #4e4e4e;font-size: 18px;margin: 0 2px;">' + arr[i][0] + '</i><span>排</span><i style="font-size: 18px;margin: 0 2px;">' + arr[i][1] + '</i><span>座</span></li>')
-                            if (flag%2==0){
-                                $(".seats").append('<br><br>')
-                            }
+                let json = res.data.data;
+                if (json == '锁定成功') {
+                    let sel = $("#selected-seats").find('li').text();
+                    let arr = getSelected(sel);
+                    for (let i = 0; i < arr.length; i++) {
+                        let flag = i + 1;
+                        $(".seats").append('<li style="float: left;margin-left: 28px;"><i style="color: #4e4e4e;font-size: 18px;margin: 0 2px;">' + arr[i][0] + '</i><span>排</span><i style="font-size: 18px;margin: 0 2px;">' + arr[i][1] + '</i><span>座</span></li>')
+                        if (flag % 2 == 0) {
+                            $(".seats").append('<br><br>')
                         }
-                        if (count==0) {
-                            let serverTime = new Date().getTime();
-                            countDown(serverTime);
-                        }
-                        count++;
-                        step.next('#stepForm');
-                        let total = $("#total").text();
-                        $(".total").html('<span class="layui-icon layui-icon-rmb" style="color: red;"></span>' +'<span style="color: red;font-size: 27px;margin-left: 4px;">'+ total+'</span>')
                     }
-                    else {
-                        layer.msg(json, {
-                            icon: 5,
-                            time: 1000,
-                        });
-                        return false;
+                    if (count == 0) {
+                        let serverTime = new Date().getTime();
+                        countDown(serverTime);
                     }
-                })
+                    count++;
+                    step.next('#stepForm');
+                    let total = $("#total").text();
+                    $(".total").html('<span class="layui-icon layui-icon-rmb" style="color: red;"></span>' + '<span style="color: red;font-size: 27px;margin-left: 4px;">' + total + '</span>')
+                } else {
+                    layer.msg(json, {
+                        icon: 5,
+                        time: 1000,
+                    });
+                    return false;
+                }
+            })
             return false;
         });
-
-
         form.on('submit(formStep2)', function (data) {
             layer.confirm("您确定订单没有问题吗？确认后无法修改", function (index) {
-                layer.close(index);
-                step.next('#stepForm');
+                let pId = parseInt($("#pId").val());
+                let jsonStr = JSON.stringify(getSeat());
+                axios({
+                    method: 'POST',
+                    url: '/order/insertOrder/' + pId,
+                    headers: {
+                        'Content-Type': "application/json;charset=UTF-8"
+                    },
+                    params: {
+                        amount: parseInt($("#total").text()),
+                    },
+                    data: jsonStr
+                }).then(function (res) {
+                    let json = res.data.data;
+                    $(".orderNo").html(json.orderNo);
+                    orderId = json.id;
+                    layer.close(index);
+                    getBalance();
+                    step.next('#stepForm');
+                })
                 return false;
             })
         });
+        form.on('submit(formStep3)', function (data) {
+            if (money >= parseInt($("#total").text())) { //余额充足
+                axios({
+                    method: 'POST',
+                    url: '/order/payOrder',
+                    headers: {
+                        'Content-Type': "application/json;charset=UTF-8"
+                    },
+                    data: {
+                        id: orderId,
+                        amount: parseInt($("#total").text())
+                    }
+                }).then(function (res) {
+                    let data = res.data.data;
+                    if (data === '支付成功') {
+                        layer.msg(data, {
+                            icon: 6,
+                            time: 1000,
+                        });
+                        step.next('#stepForm');
+                    }
+                    else {
+                        layer.msg(data, {
+                            icon: 5,
+                            time: 1000,
+                        });
+                        getBalance();
+                    }
+                })
+            } else {
+                layer.confirm("您的余额不足请充值", function (index) {
+                    $("#recharge").click();
+                })
+            }
+        });
+        function getBalance() {
+            axios({
+                method: 'POST',
+                url: '/user/getBalance/' + getUserName(),
+            }).then(function (res) {
+                money = res.data.data;
+                $("#balance").html('您的余额还剩'+' <span style="font-size: 28px;color: #380808;">' + money + '</span>'+'元')
+                if (money < parseInt($("#total").text())) { //余额不足
+                    $("#massage").html('')    //清空内容
+                    $("#massage").html('余额不足请充值')
+                    $("#recharge").show();
+                } else {
+                    $("#massage").html('')    //清空内容
+                    $("#massage").html('余额充足可购买')
+                    $("#recharge").hide();
+                }
+            })
+        }
+        $("#recharge").click(function () {
+            layui.use(['form'], function () {
+                var form = layui.form,
+                    layer = layui.layer,
+                    $ = layui.$;
+                form.verify({
+                    money: [
+                        /^([0-9]+|[0-9]{1,3}(,[0-9]{3})*)(.[0-9]{1,2})?$/,
+                        '请输入正确的金额'
+                    ],
+                })
+                layui.use('layer', function () {
+                        var layer = layui.layer;
+                        var index = layer.open({
+                            title: '评价',
+                            area: ['500px', '300px'],
+                            theme: 'skyblue',
+                            type: 1,
+                            content: $('#test4'), //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+                        });
+                        form.on('submit(saveBtn)', function (data) {
+                            $("#submit").attr("disabled", "disabled").addClass("layui-btn-disabled");
+                            axios.post(
+                                '/user/recharge',
+                                data.field
+                            ).then(function (response) {
+                                let data = response.data.data
+                                if ( data=== '充值成功'){
+                                    layer.msg(data, {
+                                        icon: 1,
+                                        time: 1000,
+                                        end: function () {
+                                            getBalance();
+                                            $("#test4").hide();
+                                            layer.close(index)
+                                        }
+                                    });
+                                }
+                            })
+                        })
+                    }
+                );
+            })
+        })
 
         $('.pre').click(function () {
             let pId = parseInt($("#pId").val());
@@ -743,12 +910,11 @@
                 data: data
             }).then(function (res) {
                 let json = res.data.data;
-                if (json == "解除锁定成功"){
+                if (json == "解除锁定成功") {
                     $(".seats").children().remove();
                     $("#test").children().remove();
                     step.pre('#stepForm');
-                }
-                else {
+                } else {
                     layer.msg(json, {
                         icon: 5,
                         time: 1000,
@@ -756,13 +922,10 @@
                     return false;
                 }
             })
-
         });
-
         $('.next').click(function () {
             step.next('#stepForm');
         });
-
     });
 </script>
 </html>

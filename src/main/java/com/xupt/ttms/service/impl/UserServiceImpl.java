@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 @Service
 @Transactional
@@ -46,9 +47,7 @@ public class UserServiceImpl implements UserService {
      * 判断用户名是否存在
      */
     public User getUserByUsername(String userName) {
-        UserExample userExample = new UserExample();
-        userExample.createCriteria().andUsernameEqualTo(userName);
-        List<User> users = usermapper.selectByExample(userExample);
+        List<User> users = usermapper.select(userName);
         if (users.size() == 0)
             return null;
         else {
@@ -73,6 +72,11 @@ public class UserServiceImpl implements UserService {
         UserExample userExample = new UserExample();
         userExample.createCriteria().andUsernameEqualTo(userName).andPhoneEqualTo(phone);
         return usermapper.updateByExampleSelective(new User(password), userExample);
+    }
+
+    @Override
+    public int recharge(BigDecimal balance,String username) {
+        return usermapper.recharge(balance,username);
     }
 
 }

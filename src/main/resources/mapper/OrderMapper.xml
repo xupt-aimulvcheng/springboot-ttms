@@ -14,7 +14,7 @@
         <result property="generateTime" column="generate_time"></result>
         <result property="purchaseTime" column="purchase_time"></result>
     </resultMap>
-    <insert id="insert">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into `order`
         values (null, #{order.orderNo}, #{order.status}, #{order.amount}, #{order.desc}, #{order.userId},now(),null);
     </insert>
@@ -25,6 +25,10 @@
             status = #{record.status}
         </if>
         where id = #{record.id}
+    </update>
+    <update id="payOrder">
+        update `order` set purchase_time = now(),status=1
+        where id = #{order.id};
     </update>
     <delete id="deleteByPrimaryKey">
         delete

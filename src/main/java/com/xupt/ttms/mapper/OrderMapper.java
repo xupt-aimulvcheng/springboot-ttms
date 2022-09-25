@@ -12,4 +12,6 @@ public interface OrderMapper {
     Order selectByPrimaryKey(@Param("id") Integer id);
 
     int updateByPrimaryKey(@Param("record") Order record);
+
+    int payOrder(@Param("order") Order order1);
 }

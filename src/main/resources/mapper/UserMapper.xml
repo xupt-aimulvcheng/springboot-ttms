@@ -11,6 +11,7 @@
     <result column="username" jdbcType="VARCHAR" property="username" />
     <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="balance" property="balance" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -268,7 +269,13 @@
       phone = #{phone,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
-    <insert id="addUser">
+    <update id="recharge">
+      update user set balance = balance + #{amount} where username = #{username};
+    </update>
+  <update id="payOrder">
+    update user set balance = balance - #{amount} where username = #{username};
+  </update>
+  <insert id="addUser">
         insert into user values (null,#{username},#{password},#{phone});
     </insert>
 
@@ -278,4 +285,7 @@
     <select id="getUserByUsername" resultType="com.xupt.ttms.pojo.User">
         select * from user where username=#{username};
     </select>
+  <select id="select" resultMap="BaseResultMap">
+    select id,username,password,phone,balance from user where username = #{username};
+  </select>
 </mapper>

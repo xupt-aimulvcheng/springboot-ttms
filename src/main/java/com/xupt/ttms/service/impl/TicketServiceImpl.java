@@ -5,7 +5,6 @@ import com.xupt.ttms.mapper.TicketMapper;
 import com.xupt.ttms.pojo.Plan;
 import com.xupt.ttms.pojo.Seat;
 import com.xupt.ttms.pojo.Ticket;
-import com.xupt.ttms.pojo.TicketParam;
 import com.xupt.ttms.service.SeatService;
 import com.xupt.ttms.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
