@@ -10,6 +10,7 @@ import com.xupt.ttms.pojo.Code;
 import com.xupt.ttms.pojo.Hall;
 import com.xupt.ttms.pojo.Result;
 import com.xupt.ttms.service.HallService;
+import com.xupt.ttms.util.RedisUtil;
 import com.xupt.ttms.util.ToResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,13 +29,14 @@ public class HallServlet {
     private Code code;
     @Autowired
     private RedisTemplate redisTemplate;
+    private String keys = "hall_*";
 
     @RequestMapping(value = "/hall/updateHall", method = RequestMethod.POST)
     @ResponseBody
     public String updateHall(@RequestBody Hall hall) {
         int result = hallService.updateHall(hall);
         if (result >= 1) {
-            redisTemplate.delete("hall_*");
+            RedisUtil.deleteCaChe(keys,redisTemplate);
             return "修改成功";
         } else {
             return "修改失败";
@@ -50,7 +52,7 @@ public class HallServlet {
 
     @RequestMapping(value = "/hall/getHallByName", method = RequestMethod.GET)
     @ResponseBody
-    @Cacheable(value = "getHallByName",keyGenerator = "hallKeyGenerator")
+    @Cacheable(value = "hall_",keyGenerator = "hallKeyGenerator")
     public Result getHallByName(@RequestParam(value = "name", required = false) String name, @RequestParam("page") int pageNum, @RequestParam("limit") int pageSize) {
         PageInfo<Hall> halls;
         if (name != null) {
@@ -67,7 +69,7 @@ public class HallServlet {
     public String addHall(@RequestBody Hall hall) throws IOException {
         int insert = hallService.insert(hall);
         if (insert>=1){
-            redisTemplate.delete("hall_*");
+            RedisUtil.deleteCaChe(keys,redisTemplate);
         }
         return (insert >= 1 ? "添加成功" : "添加失败");
     }
@@ -77,7 +79,7 @@ public class HallServlet {
     public Code deleteHall(@PathVariable("ids") String ids) {
         int delete = hallService.deleteHall(ids);
         if (delete >= 1) {
-            redisTemplate.delete("hall_*");
+            RedisUtil.deleteCaChe(keys,redisTemplate);
             code.setInfo("删除成功");
         }
         else if (delete == -1){

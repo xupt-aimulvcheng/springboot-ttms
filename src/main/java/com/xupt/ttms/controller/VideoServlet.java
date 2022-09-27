@@ -114,7 +114,7 @@ public class VideoServlet {
 
     @PostMapping("/video/getVideoById/{id}")
     @ResponseBody
-    @Cacheable(value = "getVideoById",keyGenerator = "videoKeyGenerator")
+    @Cacheable(value = "video_",keyGenerator = "videoKeyGenerator")
     public Result getVideoById(@PathVariable("id") Integer id) {
         List<Video> videos = this.videoService.getVideoById(id);
         return ToResult.getResult(videos);

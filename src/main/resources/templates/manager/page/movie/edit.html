@@ -23,7 +23,7 @@
     <div class="layui-form-item">
         <label class="layui-form-label required">电影名称</label>
         <div class="layui-input-block">
-            <input type="text" id="hname" name="mName" th:value="${movie.mName}" lay-verify="required|name" lay-reqtext="电影名不能为空"
+            <input type="text" id="hname" name="mName" th:value="${movie.mName}" lay-verify="required" lay-reqtext="电影名不能为空"
                    placeholder="请输入电影名称" value=""
                    class="layui-input">
         </div>
@@ -147,7 +147,7 @@
                 /^([0-9]+|[0-9]{1,3}(,[0-9]{3})*)(.[0-9]{1,2})?$/,
                 '请输入正确的金额'
             ],
-            name:[
+            mName:[
                 /^[\u4e00-\u9fa5]{2,18}[0-9]?$/,
                 '请输入正确的电影名'
             ]

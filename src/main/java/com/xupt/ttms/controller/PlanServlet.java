@@ -10,6 +10,7 @@ import com.github.pagehelper.PageInfo;
 import com.xupt.ttms.pojo.Plan;
 import com.xupt.ttms.pojo.Result;
 import com.xupt.ttms.service.PlanService;
+import com.xupt.ttms.util.RedisUtil;
 import com.xupt.ttms.util.ToResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,9 +29,11 @@ public class PlanServlet {
     private PlanService planService;
     @Autowired
     private RedisTemplate redisTemplate;
+    private String keys = "plan_";
+
     @RequestMapping(value = "/plan/getAllPlan", method = RequestMethod.GET)
     @ResponseBody
-    @Cacheable(value = "getAllPlan",keyGenerator = "planKeyGenerator")
+    @Cacheable(value = "plan_",keyGenerator = "planKeyGenerator")
     public Result getAllPlan(@RequestParam("page") int pageNum, @RequestParam("limit") int pageSize, @RequestParam("id") int id,
                              @RequestParam(value = "startDate", required = false) String startDate, @RequestParam(value = "endDate", required = false) String endDate, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "status", required = false) String status) {
         PageInfo<Plan> plans = planService.getAllPlansBymID(String.valueOf(id), pageNum, pageSize, startDate, endDate, name,status);
@@ -39,7 +42,7 @@ public class PlanServlet {
     }
 
     @RequestMapping(value = "/movie/getPlanById/{id}", method = RequestMethod.GET)
-    @Cacheable(value = "getPlanById",keyGenerator = "planKeyGenerator")
+    @Cacheable(value = "plan_",keyGenerator = "planKeyGenerator")
     public String getPlanById(@PathVariable("id") Integer id, Model model) {
         Plan plan = planService.getPlanByID(id);
         model.addAttribute("plan", plan);
@@ -53,7 +56,7 @@ public class PlanServlet {
         plan.sethId(planService.getHallIDByName(plan.gethName()));
         int result = planService.updatePlan(plan);
         if (result > 0) {
-            redisTemplate.delete("plan_");
+            RedisUtil.deleteCaChe(keys,redisTemplate);
         }
         return (result > 0 ? "修改成功" : "修改失败");
     }
@@ -63,7 +66,7 @@ public class PlanServlet {
     public String deletePlan(@PathVariable String ids) {
         int result =planService.deletePlan(ids);
         if (result > 0) {
-            redisTemplate.delete("plan_");
+            RedisUtil.deleteCaChe(keys,redisTemplate);
         }
         return result <= 0 ? "删除失败" : "删除成功";
     }
@@ -85,21 +88,21 @@ public class PlanServlet {
         System.out.println(plan);
         int result = planService.updatePlan(plan);
         if (result > 0) {
-            redisTemplate.delete("plan_");
+            RedisUtil.deleteCaChe(keys,redisTemplate);
         }
         return (result > 0 ? "添加成功" : "添加失败");
     }
 
     @GetMapping("/plan/getPlanByMIdAndTime/{MId}")
     @ResponseBody
-    @Cacheable(value = "getPlanByMIdAndTime",keyGenerator = "planKeyGenerator")
+    @Cacheable(value = "plan_",keyGenerator = "planKeyGenerator")
     public Result getPlanByMIdAndTime(@PathVariable("MId") String MId,@RequestParam(value = "Time",required = false) Integer Time){
         List<Plan> plans = planService.getPlanByMIdAndTime(MId,Time);
         return ToResult.getResult(plans);
     }
     @PostMapping("/plan/getPlanByPId/{PId}")
     @ResponseBody
-    @Cacheable(value = "getPlanByPId",keyGenerator = "planKeyGenerator")
+    @Cacheable(value = "plan_",keyGenerator = "planKeyGenerator")
     public Result getPlanByPId(@PathVariable("PId") String PId){
         Plan plan = planService.getPlanByPId(PId);
         return ToResult.getResult(plan);
