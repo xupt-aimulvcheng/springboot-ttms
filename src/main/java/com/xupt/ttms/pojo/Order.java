@@ -5,13 +5,15 @@ import lombok.Data;
 import lombok.ToString;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
 @Data
 @Component
 @ToString
-public class Order {
+public class Order  implements Serializable {
+    private static final long serialVersionUID = -6186165618109400238L;
     private Integer id;
     private String orderNo;//订单号
     private String status="0";// 0:"待支付"，1:"已支付"，2:“用户已退票“,3:"售票员已退票"

@@ -3,10 +3,12 @@ package com.xupt.ttms.pojo;
 
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Component
-public class Plan {
+public class Plan  implements Serializable {
+    private static final long serialVersionUID = 5244858794024160383L;
     private Integer id;
     private String mName;
     private String hName;

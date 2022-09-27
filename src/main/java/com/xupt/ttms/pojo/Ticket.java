@@ -3,12 +3,14 @@ package com.xupt.ttms.pojo;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Component
 @Data
-public class Ticket {
+public class Ticket  implements Serializable {
+    private static final long serialVersionUID = -3334063360587783233L;
     private Integer id;
     private Integer seatId;
     private Integer planId;

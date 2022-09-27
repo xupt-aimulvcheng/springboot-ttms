@@ -12,6 +12,7 @@
     <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="balance" property="balance" />
+    <result column="is_deleted" property="isDeleted"></result>
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -280,12 +281,12 @@
     </insert>
 
     <select id="getUserByUsernameAndPwd" resultType="com.xupt.ttms.pojo.User">
-        select * from user where username=#{username} and password=#{password};
+        select * from user where username=#{username} and password=#{password} and is_deleted = 0;
     </select>
     <select id="getUserByUsername" resultType="com.xupt.ttms.pojo.User">
-        select * from user where username=#{username};
+        select * from user where username=#{username} and is_deleted = 0;
     </select>
   <select id="select" resultMap="BaseResultMap">
-    select id,username,password,phone,balance from user where username = #{username};
+    select id,username,password,phone,balance from user where username = #{username} and is_deleted = 0;
   </select>
 </mapper>

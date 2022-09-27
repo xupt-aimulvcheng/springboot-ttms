@@ -2,11 +2,14 @@ package com.xupt.ttms.pojo;
 
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
+
 /**
  * 处理信息
  */
 @Component
-public class Code {
+public class Code implements Serializable {
+    private static final long serialVersionUID = 4032813181909086402L;
     String info;
     String type;
 

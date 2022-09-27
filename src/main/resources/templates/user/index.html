@@ -31,24 +31,7 @@
     <img src="../../../static/images/logo.png" alt="">
 </div>-->
 <div class="main">
-    <script>
-        layui.use("element", function () {
-            var element = layui.element;
-        })
-    </script>
-    <!-- 菜单 -->
-    <ul class="layui-nav" lay-filter="">
-        <li class="layui-nav-item layui-this" status="1" style="margin-left: 600px;"><a href="javascript:;">正在热映</a>
-        </li>
-        <li class="layui-nav-item">
-            <a href="javascript:;">个人中心</a>
-            <dl class="layui-nav-child"> <!-- 二级菜单 -->
-                <dd><a href="">个人信息</a></dd>
-                <dd><a href="">我的订单</a></dd>
-                <dd><a th:href="@{/}">退出登录</a></dd>
-            </dl>
-        </li>
-    </ul>
+    <div th:replace="common :: header"></div>
     <div class="layui-carousel" id="test1" style="margin-left: 400px;">
         <div carousel-item="">
             <div>
@@ -89,7 +72,7 @@
             </div>
         </div>
     </div>
-    <div id="page1" style="margin-left: 551px;margin-top: 364px;"></div>
+    <div id="page1" style="margin-left: 551px;margin-top: 640px;"></div>
 </div>
 <script>
     //刷新电影列表
@@ -162,7 +145,7 @@
                 , last: '尾页'
                 , prev: '上一页'
                 , next: '下一页'
-                , layout: ['first', 'prev', 'page', 'count', 'next', 'last', 'skip'] //设置分页显示的内容
+                , layout: ['first', 'prev', 'page',  'next', 'last', 'skip'] //设置分页显示的内容
                 , jump: function (obj, first) {
                     var currPage = obj.curr;  //这里是后台返回给前端的当前页数
                     if (!first) { //点击跳页触发函数自身，并传递当前页：obj.curr  ajax 再次请求

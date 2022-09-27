@@ -1,14 +1,17 @@
 package com.xupt.ttms.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Component
 @Data
-public class User {
+public class User implements Serializable {
 
+    private static final long serialVersionUID = -6485342238647844724L;
     private Integer id;
 
 
@@ -21,6 +24,8 @@ public class User {
     private String phone;
 
     private BigDecimal balance;
+    @TableLogic
+    private Integer isDeleted;
 
     public User() {
     }

@@ -5,7 +5,10 @@ import com.xupt.ttms.pojo.Video;
 import com.xupt.ttms.service.VideoService;
 import com.xupt.ttms.util.FileUtils;
 import com.xupt.ttms.util.ToResult;
+import javafx.scene.control.TextArea;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +28,7 @@ public class VideoServlet {
     @Autowired
     private Video video;
     @Autowired
-    private Result result;
+    private RedisTemplate redisTemplate;
 
     @GetMapping("/movie/upload/{m_id}")
     public String toupload(Model model, @PathVariable("m_id") Integer m_id) {
@@ -93,6 +96,7 @@ public class VideoServlet {
 
     @PostMapping("/video/getVideoByMId/{mId}")
     @ResponseBody
+    @Cacheable(value = "getVideoByMId",keyGenerator = "videoKeyGenerator")
     public Result getVideoByMId(@PathVariable("mId") Integer mId, @RequestParam(value = "id", required = false) Integer id) {
         List<Video> videos = this.videoService.getVideoByMId(mId, id);
         if (id != null) {
@@ -110,6 +114,7 @@ public class VideoServlet {
 
     @PostMapping("/video/getVideoById/{id}")
     @ResponseBody
+    @Cacheable(value = "getVideoById",keyGenerator = "videoKeyGenerator")
     public Result getVideoById(@PathVariable("id") Integer id) {
         List<Video> videos = this.videoService.getVideoById(id);
         return ToResult.getResult(videos);

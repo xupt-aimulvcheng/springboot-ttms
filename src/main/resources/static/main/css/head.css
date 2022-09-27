@@ -1,0 +1,50 @@
+.header {
+    position: fixed;
+    top: 0;
+    z-index: 999;
+    width: 100%;
+    min-width: 1200px;
+    background-color: #fff;
+    border-bottom: 1px solid #d8d8d8;
+}
+.header .header-inner {
+    width: 1200px;
+    margin: 0 auto;
+    height: 80px;
+}
+.header a.logo {
+    line-height: 100em;
+}
+.header .logo, .header a.logo {
+    float: left;
+    width: 133px;
+    height: 80px;
+}
+
+.header .logo {
+    background: url("[[@{/}]]main/images/logo.png") no-repeat 0;
+    background-size: contain;
+    overflow: hidden;
+}
+a {
+    text-decoration: none;
+}
+.header .nav {
+    background-color: #fff;
+    overflow: hidden;
+    width: 530px;
+    float: left;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}

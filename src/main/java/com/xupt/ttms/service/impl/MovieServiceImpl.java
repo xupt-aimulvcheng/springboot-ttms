@@ -100,6 +100,11 @@ public class MovieServiceImpl implements MovieService {
         return movieMapper.selectByPrimaryKey(id);
     }
 
+    @Override
+    public int getLenReleased() {
+        return movieMapper.getLenReleased();
+    }
+
 
     /**
      * 根据id修改电影信息

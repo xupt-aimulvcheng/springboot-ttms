@@ -2,8 +2,11 @@ package com.xupt.ttms.pojo;
 
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
+
 @Component
-public class Video {
+public class Video  implements Serializable {
+    private static final long serialVersionUID = -291206511224461066L;
     private Integer id;
     private Integer mId;
     private String mSrc;

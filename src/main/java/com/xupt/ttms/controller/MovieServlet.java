@@ -13,6 +13,9 @@ import com.xupt.ttms.service.MovieService;
 import com.xupt.ttms.util.ToResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -31,11 +34,14 @@ import java.util.UUID;
 public class MovieServlet {
     @Autowired
     private MovieService movieService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @RequestMapping(value = "/movie/updateMovie", method = RequestMethod.POST)
     @ResponseBody
     public String updateMovie(@RequestBody Movie movie) {
         int result = movieService.updateMovie(movie.getId(), movie);
+        redisTemplate.delete("movie_*");
         return (result >= 1 ? "修改成功" : "修改失败");
     }
 
@@ -48,6 +54,7 @@ public class MovieServlet {
 
     @RequestMapping(value = "/movie/getMovieInfoById/{id}", method = RequestMethod.POST)
     @ResponseBody
+    @Cacheable(value  ="getMovieInfoById",keyGenerator = "movieKeyGenerator")
     public Result getMovieInfoById(@PathVariable("id") Integer id) {
         Movie movie = movieService.getMovieById(id);
         return ToResult.getResult(movie);
@@ -55,8 +62,10 @@ public class MovieServlet {
 
     @RequestMapping(value = "/movie/getMovie", method = RequestMethod.GET)
     @ResponseBody
+    @Cacheable(value ="getMovie",keyGenerator = "movieKeyGenerator")
     public Result getMovie(@RequestParam("page") int pageNum, @RequestParam("limit") int pageSize, @RequestParam(value = "name", required = false) String name,
                            @RequestParam(value = "startDate", required = false) String startDate, @RequestParam(value = "endDate", required = false) String endDate, @RequestParam(value = "status", required = false) String status) {
+
         PageInfo<Movie> movies = movieService.getMovie(name, startDate, endDate, status, pageNum, pageSize);
         Result result = ToResult.getResult(movies);
         return result;
@@ -64,6 +73,7 @@ public class MovieServlet {
 
     @RequestMapping(value = "/movie/getMovieReleased", method = RequestMethod.GET)
     @ResponseBody
+    @Cacheable(value ="getMovieReleased",keyGenerator = "movieKeyGenerator")
     public Result getMovieReleased(@RequestParam("page") int pageNum, @RequestParam("limit") int pageSize, @RequestParam(value = "name", required = false) String name,
                                    @RequestParam(value = "startDate", required = false) String startDate, @RequestParam(value = "endDate", required = false) String endDate) {
         PageInfo<Movie> movies = movieService.getMovie(name, startDate, endDate, "上映中", pageNum, pageSize);
@@ -72,6 +82,7 @@ public class MovieServlet {
     }
     @GetMapping(value = "/movie/GetMovieByStatus")
     @ResponseBody
+    @Cacheable(value ="GetMovieByStatus",keyGenerator = "movieKeyGenerator")
     public Result GetMovieByStatus(@RequestParam(value = "page",required = false) Integer pageNum, @RequestParam(value = "limit",required = false) Integer pageSize, @RequestParam(value = "type", required = false) Integer kind) {
         if (pageNum==null){
             pageNum=1;
@@ -105,11 +116,18 @@ public class MovieServlet {
         return "user/index";
     }
 
+    @GetMapping("/movie/getLenReleased")
+    @ResponseBody
+    @Cacheable(value ="getLenReleased",keyGenerator = "movieKeyGenerator")
+    public Result getLenReleased(){
+        int len = movieService.getLenReleased();
+        return ToResult.getResult(len);
+    }
+
     @RequestMapping(value = "/movie/addMovie", method = RequestMethod.POST)
     @ResponseBody
     public String addMovie(@RequestParam("file") MultipartFile photo, HttpSession session,@RequestParam("mName") String mName,
-                           @RequestParam("mType") String mType, @RequestParam("mLength") Integer mLength,
-                           @RequestParam("mPrice") Double mPrice,@RequestParam("mDate") String mDate,
+                           @RequestParam("mType") String mType, @RequestParam("mLength") Integer mLength,@RequestParam("mDate") String mDate,
                            @RequestParam("mDirector") String mDirector,@RequestParam("mActor") String mActor, Double mBoxOffice,
                            Double mScore,@RequestParam("mIntroduction") String mIntroduction, String mImage, @RequestParam("status") String status) throws IOException {
         String fileName = photo.getOriginalFilename();
@@ -129,9 +147,10 @@ public class MovieServlet {
         log.info("封面文件的绝对路径为"+finalPath);
         log.info("数据库存储的的路径为"+url);
         photo.transferTo(new File(finalPath));
-        Movie movie = new Movie(mName,mType,mLength,mPrice,mDate,mDirector,mActor,mBoxOffice,mScore,mIntroduction,url,status);
+        Movie movie = new Movie(mName,mType,mLength,mDate,mDirector,mActor,mBoxOffice,mScore,mIntroduction,url,status);
         System.out.println(movie);
         int insert = movieService.insert(movie);
+        redisTemplate.delete("movie_*");
         return (insert >= 1 ? "添加成功" : "添加失败");
     }
 
@@ -144,6 +163,7 @@ public class MovieServlet {
 
     @PostMapping("/user/getMovieById/{id}")
     @ResponseBody
+    @Cacheable(value = "getMovieById",keyGenerator = "movieKeyGenerator")
     public Result getMovieById(@PathVariable("id") Integer id){
         Movie movie = movieService.getMovieByById(id);
         Result result = ToResult.getResult(movie);
@@ -154,6 +174,9 @@ public class MovieServlet {
     @ResponseBody
     public String deleteMovie(@PathVariable("ids") String ids) {
         int delete = movieService.deleteMovie(ids);
+        if (delete>=1) {
+            redisTemplate.delete("movie_*");
+        }
         return (delete >= 1 ? "删除成功" : "删除失败");
     }
 }

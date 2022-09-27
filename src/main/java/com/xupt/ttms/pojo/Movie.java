@@ -2,12 +2,17 @@ package com.xupt.ttms.pojo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.stereotype.Component;
+
+import java.io.Serializable;
+
 @Component
-public class Movie {
+public class Movie implements Serializable {
+    private static final long serialVersionUID = -3085705791598038051L;
+
     public Movie() {
     }
 
-    public Movie(Integer id, String mName, String mType, Integer mLength, Double mPrice, String mDate, String mDirector, String mActor, Double mBoxOffice, Double mScore, String mIntroduction, String mImage, String status) {
+    public Movie(Integer id, String mName, String mType, Integer mLength, String mDate, String mDirector, String mActor, Double mBoxOffice, Double mScore, String mIntroduction, String mImage, String status) {
         this.id = id;
         this.mName = mName;
         this.mType = mType;
@@ -114,7 +119,7 @@ public class Movie {
      */
     private String status;
 
-    public Movie(String mName, String mType, Integer mLength, Double mPrice, String mDate, String mDirector, String mActor, Double mBoxOffice, Double mScore, String mIntroduction, String mImage, String status) {
+    public Movie(String mName, String mType, Integer mLength, String mDate, String mDirector, String mActor, Double mBoxOffice, Double mScore, String mIntroduction, String mImage, String status) {
         this.mName = mName;
         this.mType = mType;
         this.mLength = mLength;

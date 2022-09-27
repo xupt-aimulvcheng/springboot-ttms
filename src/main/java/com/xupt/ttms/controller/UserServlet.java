@@ -92,9 +92,10 @@ public class UserServlet {
         return code;
     }
 
-    @RequestMapping(value = "/user/logout", method = RequestMethod.POST)
-    public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    @RequestMapping(value = "/user/logout", method = RequestMethod.GET)
+    public String logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.getSession().invalidate();
+        return "/index";
     }
 
     @RequestMapping(value = "/user/forgetPassword", method = RequestMethod.POST)

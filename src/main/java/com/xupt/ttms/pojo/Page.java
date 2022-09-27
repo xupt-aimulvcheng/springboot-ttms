@@ -1,6 +1,9 @@
 package com.xupt.ttms.pojo;
 
-public class Page {
+import java.io.Serializable;
+
+public class Page  implements Serializable {
+    private static final long serialVersionUID = -7769872887655981374L;
     private Integer page;
     private Integer limit;
 

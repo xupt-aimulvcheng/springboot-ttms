@@ -1,6 +1,9 @@
 package com.xupt.ttms.pojo;
 
-public class Seat {
+import java.io.Serializable;
+
+public class Seat  implements Serializable {
+    private static final long serialVersionUID = 2227284726206667075L;
     private Integer id;
     private Integer studioId;
     private Integer row;

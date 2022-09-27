@@ -163,12 +163,12 @@
           This element was generated on Wed Jul 06 15:34:23 CST 2022.
         -->
         insert into movie (id, m_name, m_type,
-        m_length, m_price, m_date,
+        m_length,  m_date,
         m_director, m_actor, m_box_office,
         m_score, m_introduction, m_image,
         status)
         values (#{id,jdbcType=INTEGER}, #{mName,jdbcType=VARCHAR}, #{mType,jdbcType=VARCHAR},
-        #{mLength,jdbcType=INTEGER}, #{mPrice,jdbcType=DOUBLE}, #{mDate,jdbcType=DATE},
+        #{mLength,jdbcType=INTEGER},  #{mDate,jdbcType=DATE},
         #{mDirector,jdbcType=VARCHAR}, #{mActor,jdbcType=VARCHAR}, #{mBoxOffice,jdbcType=DOUBLE},
         #{mScore,jdbcType=INTEGER}, #{mIntroduction,jdbcType=VARCHAR}, #{mImage,jdbcType=VARCHAR},
         #{status,jdbcType=VARCHAR})
@@ -337,6 +337,9 @@
     </select>
     <select id="getMovieByName" resultMap="BaseResultMap">
         select * from movie where m_name = #{name};
+    </select>
+    <select id="getLenReleased" resultType="java.lang.Integer">
+        select count(*) from movie where status = '上映中';
     </select>
     <update id="updateByExampleSelective" parameterType="map">
         <!--

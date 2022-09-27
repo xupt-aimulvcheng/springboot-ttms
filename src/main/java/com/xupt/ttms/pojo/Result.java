@@ -7,8 +7,11 @@ package com.xupt.ttms.pojo;/*
 
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
+
 @Component
-public class Result<T> {
+public class Result<T> implements Serializable {
+    private static final long serialVersionUID = -3554614540427758699L;
     private Integer code;
     private String message;
     private T data;

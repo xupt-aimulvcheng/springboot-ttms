@@ -107,4 +107,6 @@ public interface MovieMapper {
     List<Movie> getMoviesByType(@Param("status") String status,@Param("type") String type);
 
     Movie getMovieByName(@Param("name") String name);
+
+    int getLenReleased();
 }

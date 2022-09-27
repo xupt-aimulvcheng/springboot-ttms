@@ -12,6 +12,8 @@ import com.xupt.ttms.pojo.Result;
 import com.xupt.ttms.service.HallService;
 import com.xupt.ttms.util.ToResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,12 +26,15 @@ public class HallServlet {
     private HallService hallService;
     @Autowired
     private Code code;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @RequestMapping(value = "/hall/updateHall", method = RequestMethod.POST)
     @ResponseBody
     public String updateHall(@RequestBody Hall hall) {
         int result = hallService.updateHall(hall);
         if (result >= 1) {
+            redisTemplate.delete("hall_*");
             return "修改成功";
         } else {
             return "修改失败";
@@ -45,6 +50,7 @@ public class HallServlet {
 
     @RequestMapping(value = "/hall/getHallByName", method = RequestMethod.GET)
     @ResponseBody
+    @Cacheable(value = "getHallByName",keyGenerator = "hallKeyGenerator")
     public Result getHallByName(@RequestParam(value = "name", required = false) String name, @RequestParam("page") int pageNum, @RequestParam("limit") int pageSize) {
         PageInfo<Hall> halls;
         if (name != null) {
@@ -60,6 +66,9 @@ public class HallServlet {
     @ResponseBody
     public String addHall(@RequestBody Hall hall) throws IOException {
         int insert = hallService.insert(hall);
+        if (insert>=1){
+            redisTemplate.delete("hall_*");
+        }
         return (insert >= 1 ? "添加成功" : "添加失败");
     }
 
@@ -68,6 +77,7 @@ public class HallServlet {
     public Code deleteHall(@PathVariable("ids") String ids) {
         int delete = hallService.deleteHall(ids);
         if (delete >= 1) {
+            redisTemplate.delete("hall_*");
             code.setInfo("删除成功");
         }
         else if (delete == -1){

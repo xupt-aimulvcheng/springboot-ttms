@@ -25,4 +25,6 @@ public interface MovieService {
     Movie getMovieByName(String name);
 
     Movie getMovieByById(Integer id);
+
+    int getLenReleased();
 }
