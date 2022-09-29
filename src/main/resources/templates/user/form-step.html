@@ -317,7 +317,8 @@
                             <div>
                                 <div class="layui-form" style="margin: 0 auto;max-width: 1000px;padding-top: 40px;">
                                     <div class="info">
-                                        <span>请您仔细核对订单信息</span> <br><p>如遇订单问题请致电110进行查询</p>
+                                        <span>请您仔细核对订单信息</span> <br>
+                                        <p>如遇订单问题请致电110进行查询</p>
                                     </div>
                                     <table class="table table-bordered">
                                         <thead>
@@ -464,7 +465,7 @@
                 <div class="layui-form-item" style="margin-top: 28px;margin-left: -61px;">
                     <div class="layui-input-block">
                         <button class="layui-btn layui-btn-normal" id="submit" lay-submit lay-filter="saveBtn">
-                            立即提交
+                            充值
                         </button>
                     </div>
                 </div>
@@ -477,9 +478,11 @@
     function getUserName() {
         return document.cookie.split(";")[0].split("=")[1];
     }
+
     $("#test4").hide();
     let orderId;
     let money;
+    let mId;
     layui.use(['form', 'util', 'step', 'table', 'element'], function () {
         var form = layui.form,
             layer = layui.layer,
@@ -491,6 +494,7 @@
         var seatStr = [];
         axios.post("/plan/getPlanByPId/" + $("#pId").val()).then(function (response) {
             let data = response.data.data;
+            mId = data.mId;
             $(".playname").html(data.mName);
             $(".studioname").html(data.hName);
             $(".time").html(dayjs(data.startDate).format("MM月DD日 HH:mm"));
@@ -638,7 +642,6 @@
                 sc.get(badArr).status('unavailable');
             });
             //已售出或座位损坏的座位
-
         }
 
         let count = 0;//用于验证用户第几次点击来防止倒计时混乱
@@ -716,9 +719,13 @@
                 timerout = timer;
                 layui.$('.test').html('请您在' + '<span>' + date[2] + '</span>' + '分' + '<span>' + date[3] + '</span>' + '秒' + "以内完成付款" + '<br>' + '<p>否则订单自动取消，如遇订单问题请致电110进行查询</p>');
                 if (serverTime == endTime) {
-                    layer.open({
-                        title: '<div style="color:#44ff00">完成</div>'
-                        , content: '增加成功'
+                    layer.alert('您未在规定时间内完成支付请返回重新购买', {
+                        title: '注意',
+                        anim: 6,
+                        btn: '我知道了'
+                    }, function (index) {
+                        window.location = '/ToMoviePlan/' + mId;
+                        layer.close(index);
                     });
                 }
             });
@@ -842,8 +849,7 @@
                             time: 1000,
                         });
                         step.next('#stepForm');
-                    }
-                    else {
+                    } else {
                         layer.msg(data, {
                             icon: 5,
                             time: 1000,
@@ -857,13 +863,14 @@
                 })
             }
         });
+
         function getBalance() {
             axios({
                 method: 'POST',
                 url: '/user/getBalance/' + getUserName(),
             }).then(function (res) {
                 money = res.data.data;
-                $("#balance").html('您的余额还剩'+' <span style="font-size: 28px;color: #380808;">' + money + '</span>'+'元')
+                $("#balance").html('您的余额还剩' + ' <span style="font-size: 28px;color: #380808;">' + money + '</span>' + '元')
                 if (money < parseInt($("#total").text())) { //余额不足
                     $("#massage").html('')    //清空内容
                     $("#massage").html('余额不足请充值')
@@ -875,6 +882,7 @@
                 }
             })
         }
+
         $("#recharge").click(function () {
             layui.use(['form'], function () {
                 var form = layui.form,
@@ -902,7 +910,7 @@
                                 data.field
                             ).then(function (response) {
                                 let data = response.data.data
-                                if ( data=== '充值成功'){
+                                if (data === '充值成功') {
                                     layer.msg(data, {
                                         icon: 1,
                                         time: 1000,
@@ -946,7 +954,7 @@
             })
         });
         $('.next').click(function () {
-            step.next('#stepForm');
+            window.location = '/buyTicket/'+$("#pId").val();
         });
     });
 </script>

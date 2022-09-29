@@ -146,6 +146,7 @@
     </select>
     <select id="getPlanByPId" resultMap="BaseResultMap">
         select p_startTime,
+               m_id,
                p.h_id,
                (select m_name from movie m where m.id = p.m_id) as m_name,
                (select h_name from hall h where h.id = p.h_id)  as h_name

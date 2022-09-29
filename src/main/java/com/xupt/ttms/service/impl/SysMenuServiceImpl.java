@@ -1,6 +1,5 @@
 package com.xupt.ttms.service.impl;
 
-import com.xupt.ttms.mapper.SysMenuMapper;
 import com.xupt.ttms.mapper.SystemMenuMapper;
 import com.xupt.ttms.pojo.MenuVo;
 import com.xupt.ttms.pojo.SysMenu;
