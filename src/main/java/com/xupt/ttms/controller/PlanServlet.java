@@ -85,8 +85,7 @@ public class PlanServlet {
             return "抱歉，该演出计划已存在,请输入正确的数据";
         plan.setEndDate(planService.getEndTime(String.valueOf(plan.getmId()), plan.getStartDate()));
         plan.sethId(planService.getHallIDByName(plan.gethName()));
-        System.out.println(plan);
-        int result = planService.updatePlan(plan);
+        int result = planService.insertPlan(plan);
         if (result > 0) {
             RedisUtil.deleteCaChe(keys,redisTemplate);
         }

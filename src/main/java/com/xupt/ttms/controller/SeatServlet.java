@@ -39,6 +39,7 @@ public class SeatServlet {
         if (result>=1) {
             String keys = "seat_";
             RedisUtil.deleteCaChe(keys,redisTemplate);
+            RedisUtil.deleteCaChe("ticket_",redisTemplate);
         }
         return result>=1?"修改成功":"修改失败";
     }

@@ -203,6 +203,25 @@
             color: #292820f0;
         }
 
+        .info {
+            width: 100%;
+            height: 90px;
+            padding-top: 20px;
+            margin-bottom: 40px;
+            background-color: #d89898;
+            font-size: 18px;
+        }
+
+        .info span {
+            font-size: 2em;
+            color: #472B34;
+        }
+
+        .info p {
+            font-size: 14px;
+            color: #292820f0;
+        }
+
         #stepForm {
             height: 800px !important;
             margin: 0px auto !important;
@@ -297,7 +316,9 @@
                             </div>
                             <div>
                                 <div class="layui-form" style="margin: 0 auto;max-width: 1000px;padding-top: 40px;">
-                                    <div class="test"></div>
+                                    <div class="info">
+                                        <span>请您仔细核对订单信息</span> <br><p>如遇订单问题请致电110进行查询</p>
+                                    </div>
                                     <table class="table table-bordered">
                                         <thead>
                                         <tr>
@@ -758,11 +779,6 @@
                             $(".seats").append('<br><br>')
                         }
                     }
-                    if (count == 0) {
-                        let serverTime = new Date().getTime();
-                        countDown(serverTime);
-                    }
-                    count++;
                     step.next('#stepForm');
                     let total = $("#total").text();
                     $(".total").html('<span class="layui-icon layui-icon-rmb" style="color: red;"></span>' + '<span style="color: red;font-size: 27px;margin-left: 4px;">' + total + '</span>')
@@ -792,6 +808,11 @@
                     data: jsonStr
                 }).then(function (res) {
                     let json = res.data.data;
+                    if (count == 0) {
+                        let serverTime = new Date().getTime();
+                        countDown(serverTime);
+                    }
+                    count++;
                     $(".orderNo").html(json.orderNo);
                     orderId = json.id;
                     layer.close(index);

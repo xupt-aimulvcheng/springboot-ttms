@@ -1,5 +1,6 @@
 package com.xupt.ttms.util;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -40,5 +41,18 @@ public class DateUtil {
         now.setTime(date);
         now.set(Calendar.DATE, now.get(Calendar.DATE) + amount);
         return now.getTime();
+    }
+    public static String TimeAdd(String oldTime,String add){
+        int addMit = Integer.valueOf(add);
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = null;
+        try {
+            date = df.parse(oldTime);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        Date expireTime = new Date(date.getTime() + addMit*60*1000);
+        String newTime = df.format(expireTime);
+        return newTime;
     }
 }

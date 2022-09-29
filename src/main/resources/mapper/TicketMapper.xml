@@ -55,6 +55,9 @@
         from ticket
         where plan_id in (#{pIds});
     </delete>
+    <update id="deleteOrder">
+       update ticket set order_id = null,ticket_status=1 where order_id = #{dataId};
+    </update>
     <select id="getTicketBySeats" resultType="java.lang.Integer">
         select count(*) from ticket where ticket.seat_id in
         <foreach collection="seats" item="seat" open="(" close=")" separator=",">

@@ -31,4 +31,6 @@ public interface TicketMapper {
     int UnLockTicket(@Param("pId") String pId,@Param("seats") List<Seat> seat);
 
     int updateOrderNo(@Param("seats") List<Seat> list, @Param("pId") String pId, @Param("orderId") Integer orderId);
+
+    void deleteOrder(@Param("dataId") Integer dataId);
 }

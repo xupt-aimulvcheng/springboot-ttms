@@ -65,9 +65,13 @@
     </delete>
     <select id="getAllPlansBymID" resultMap="BaseResultMap">
         select id,p_name,m_id,p_startTime,p_endTime,h_id,price,status,
-        (select m_name from movie where id = #{mId}) as m_name,
-        (select h_name from hall where id in (select h_id from plan where m_id = #{mId})) as h_name
-        from plan
+        (select m_name
+            FROM movie
+            WHERE id = '3') as m_name,
+        (select h_name
+            FROM hall
+            WHERE id = h_id) as h_name
+        FROM plan
         where m_id = #{mId}
         <if test="startDate!= null and startDate!= ''">
             and p_startTime &lt;=#{startDate}
@@ -141,7 +145,8 @@
         </where>
     </select>
     <select id="getPlanByPId" resultMap="BaseResultMap">
-        select p_startTime,p.h_id,
+        select p_startTime,
+               p.h_id,
                (select m_name from movie m where m.id = p.m_id) as m_name,
                (select h_name from hall h where h.id = p.h_id)  as h_name
         from plan p

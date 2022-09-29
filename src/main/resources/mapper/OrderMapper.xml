@@ -16,7 +16,7 @@
     </resultMap>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into `order`
-        values (null, #{order.orderNo}, #{order.status}, #{order.amount}, #{order.desc}, #{order.userId},now(),null);
+        values (null, #{order.orderNo}, #{order.status}, #{order.amount}, #{order.desc}, #{order.userId},#{order.generateTime},null,#{order.expireTime});
     </insert>
 
     <update id="updateByPrimaryKey">
@@ -30,6 +30,9 @@
         update `order` set purchase_time = now(),status=1
         where id = #{order.id};
     </update>
+    <update id="updateCloseOverTimeOrder">
+        update `order` set status = -1 where id = #{dataId};
+    </update>
     <delete id="deleteByPrimaryKey">
         delete
         from `order`
@@ -39,5 +42,8 @@
         select *
         from `order`
         where id = #{id};
+    </select>
+    <select id="selectFutureOverTimeOrder" resultMap="BaseResulMap">
+        select * from `order` where status = 0;
     </select>
 </mapper>

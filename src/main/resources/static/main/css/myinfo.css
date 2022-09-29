@@ -1,0 +1,79 @@
+.container {
+    width: 1200px;
+    margin: 0 auto;
+}
+.content {
+    overflow: hidden;
+    margin-top: 30px;
+}
+.main {
+    padding: 0 18px;
+}
+.info-content {
+    border: 1px solid #e1e1e1;
+    position: relative;
+}
+.clearfix:after, .clearfix:before {
+    content: " ";
+    display: table;
+}
+.info-content .user-profile-nav {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 200px;
+    background-color: #f4f3f4;
+    text-align: center;
+    border-right: 1px solid #e1e1e1;
+}
+a {
+    text-decoration: none;
+}
+.info-content .orders-container, .info-content .profile-container {
+    float: left;
+    margin-left: 200px;
+    padding-left: 40px;
+    width: 922px;
+    min-height: 900px;
+}
+.clearfix:after {
+    clear: both;
+}
+.info-content .user-profile-nav h1 {
+    margin-top: 40px;
+    margin-bottom: 30px;
+    font-size: 22px;
+    color: #222;
+    font-weight: 400;
+}
+.info-content .user-profile-nav a.active {
+    color: #fff;
+    background-color: #ed3931;
+}
+.info-content .user-profile-nav a {
+    display: block;
+    font-weight: 400;
+    color: #333;
+    height: 40px;
+    width: 202px;
+    margin-left: -1px;
+    line-height: 40px;
+    font-size: 18px;
+}
+.info-content .orders-container, .info-content .profile-container {
+    float: left;
+    margin-left: 200px;
+    padding-left: 40px;
+    width: 922px;
+    min-height: 900px;
+}
+.info-content .orders-container .profile-title, .info-content .profile-container .profile-title {
+    padding: 26px 0;
+    color: #ec443f;
+    font-size: 18px;
+    border-bottom: 1px solid #e1e1e1;
+    margin-bottom: 30px;
+}
+.orders-pager {
+    text-align: center;
+}

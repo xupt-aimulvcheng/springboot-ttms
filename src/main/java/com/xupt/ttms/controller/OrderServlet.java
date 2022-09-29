@@ -30,7 +30,6 @@ public class OrderServlet {
         order.setUserId(user.getId());
         order.setAmount(amount);
         order.setOrderNo(ToResult.getOrderNo());
-        log.info(order.toString());
         orderService.insertOrder(order,list,pId);
         return ToResult.getResult(order);
     }

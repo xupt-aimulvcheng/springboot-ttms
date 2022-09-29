@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的订单</title>
+    <script th:src="@{/main/js/jquery-2.1.3.min.js}"></script>
+    <script type="text/javascript" th:src="@{/main/layui/layui.js}"></script>
+    <link rel="stylesheet" th:href="@{/main/css/myinfo.css}">
+    <link rel="stylesheet" th:href="@{/main/layui/css/layui.css}">
+</head>
+<body>
+<div th:replace="common :: header"></div>
+<div class="container" id="app">
+    <div class="content">
+        <div class="main">
+            <div class="info-content clearfix">
+                <div class="user-profile-nav">
+                    <h1>个人中心</h1>
+                    <a th:href="@{/myorders}" class="orders active">我的订单</a>
+                    <a th:href="@{/profile}" class="profile ">基本信息</a>
+                </div>
+                <div class="orders-container">
+                    <div class="profile-title">我的订单</div>
+                    <div class="orders-pager">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
