@@ -9,12 +9,12 @@ import javax.annotation.Resource;
 import java.util.Map;
 
 @RestController
-@RequestMapping("login")
+@RequestMapping("/login")
 public class LoginController {
     @Resource
     private SysMenuService sysMenuService;
 
-    @GetMapping("/menu")
+    @GetMapping("/init")
     public Map<String, Object> menu() {
         return sysMenuService.menu();
     }
