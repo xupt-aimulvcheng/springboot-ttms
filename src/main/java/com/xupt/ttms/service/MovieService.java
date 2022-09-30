@@ -2,6 +2,7 @@ package com.xupt.ttms.service;
 
 import com.github.pagehelper.PageInfo;
 import com.xupt.ttms.pojo.Movie;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface MovieService {
     PageInfo<Movie> getAllMovies(int pageNum, int PageSize);
@@ -12,7 +13,7 @@ public interface MovieService {
 
     PageInfo<Movie> getMovieReleased(int parseInt, int parseInt1);
 
-    int insert(Movie hall);
+    int insert(MultipartFile photo ,Movie movie);
 
     int deleteMovie(String ids);
 

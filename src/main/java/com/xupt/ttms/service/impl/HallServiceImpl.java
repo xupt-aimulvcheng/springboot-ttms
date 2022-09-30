@@ -16,6 +16,7 @@ import com.xupt.ttms.pojo.HallExample;
 import com.xupt.ttms.pojo.Movie;
 import com.xupt.ttms.pojo.Seat;
 import com.xupt.ttms.service.HallService;
+import com.xupt.ttms.util.RedisUtil;
 import com.xupt.ttms.util.SqlSessionUtil;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +35,15 @@ public class HallServiceImpl implements HallService {
     private SeatMapper seatMapper;
     @Autowired
     private PlanMapper planMapper;
-
+    private String keys = "hall_*";
     public int insert(Hall hall) {
         int j = hallMapper.insert(hall);
         Integer id = hall.getId();
         List<Seat> seats = getSeatList(id);
         int i = seatMapper.insertSeat(seats);
+        if (i+j>=2){
+            RedisUtil.deleteCaChe(keys);
+        }
         return i+j;
     }
 
@@ -101,7 +105,11 @@ public class HallServiceImpl implements HallService {
     public int updateHall(Hall hall) {
         HallExample hallExample = new HallExample();
         hallExample.createCriteria().andIdEqualTo(hall.getId());
-        return hallMapper.updateByExampleSelective(hall, hallExample);
+        int result = hallMapper.updateByExampleSelective(hall, hallExample);
+        if (result>=1) {
+            RedisUtil.deleteCaChe(keys);
+        }
+        return result;
     }
 
     /**
@@ -111,6 +119,10 @@ public class HallServiceImpl implements HallService {
         if (planMapper.getAllByHId(ids)!=0){
             return -1;
         }
-        return hallMapper.deleteSeatsByHId(ids)+hallMapper.deleteById(ids);
+        int result = hallMapper.deleteSeatsByHId(ids) + hallMapper.deleteById(ids);
+        if (result>=2) {
+            RedisUtil.deleteCaChe(keys);
+        }
+        return result;
     }
 }

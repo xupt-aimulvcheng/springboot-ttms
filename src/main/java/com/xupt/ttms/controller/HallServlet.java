@@ -27,16 +27,13 @@ public class HallServlet {
     private HallService hallService;
     @Autowired
     private Code code;
-    @Autowired
-    private RedisTemplate redisTemplate;
-    private String keys = "hall_*";
+
 
     @RequestMapping(value = "/hall/updateHall", method = RequestMethod.POST)
     @ResponseBody
     public String updateHall(@RequestBody Hall hall) {
         int result = hallService.updateHall(hall);
         if (result >= 1) {
-            RedisUtil.deleteCaChe(keys,redisTemplate);
             return "修改成功";
         } else {
             return "修改失败";
@@ -68,9 +65,6 @@ public class HallServlet {
     @ResponseBody
     public String addHall(@RequestBody Hall hall) throws IOException {
         int insert = hallService.insert(hall);
-        if (insert>=1){
-            RedisUtil.deleteCaChe(keys,redisTemplate);
-        }
         return (insert >= 1 ? "添加成功" : "添加失败");
     }
 
@@ -79,7 +73,6 @@ public class HallServlet {
     public Code deleteHall(@PathVariable("ids") String ids) {
         int delete = hallService.deleteHall(ids);
         if (delete >= 1) {
-            RedisUtil.deleteCaChe(keys,redisTemplate);
             code.setInfo("删除成功");
         }
         else if (delete == -1){

@@ -35,7 +35,6 @@ public class OrderServlet {
     }
     @PostMapping("/order/payOrder")
     public Result payOrder(@RequestBody Order order1,@CookieValue("username") String username){
-        log.info(String.valueOf(order1));
         return ToResult.getResult(orderService.payOrder(order1,username)>0?"支付成功":"支付失败");
     }
 }

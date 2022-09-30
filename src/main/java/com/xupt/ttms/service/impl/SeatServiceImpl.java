@@ -4,6 +4,7 @@ import com.xupt.ttms.mapper.SeatMapper;
 import com.xupt.ttms.mapper.TicketMapper;
 import com.xupt.ttms.pojo.Seat;
 import com.xupt.ttms.service.SeatService;
+import com.xupt.ttms.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,10 @@ public class SeatServiceImpl implements SeatService {
         int seatResult = seatMapper.updateSeats(seats);
         if (ticketMapper.getTicketBySeats(seats)>0){  //表里有要修改的数据
             ticketResult =ticketMapper.updateTicket(seats);
+        }
+        if (seatResult+ticketResult>=2) {
+            String keys = "seat_*";
+            RedisUtil.deleteCaChe(keys);
         }
         return seatResult+ticketResult;
     }

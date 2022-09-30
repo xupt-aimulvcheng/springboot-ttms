@@ -13,6 +13,7 @@ import com.xupt.ttms.mapper.TicketMapper;
 import com.xupt.ttms.pojo.Plan;
 import com.xupt.ttms.service.PlanService;
 import com.xupt.ttms.util.DateUtil;
+import com.xupt.ttms.util.RedisUtil;
 import com.xupt.ttms.util.TypeCasting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class PlanServiceImpl implements PlanService {
     @Autowired
     private TicketMapper ticketMapper;
 
-
+    private String keys = "plan_*";
     /**
      * 根据电影时长和起始时间获取终止时长
      *
@@ -170,11 +171,21 @@ public class PlanServiceImpl implements PlanService {
 
     @Override
     public int deletePlan(String ids) {
-        return ticketMapper.deleteTicketByPIds(ids)+planMapper.deletePlan(ids);
+        int result = ticketMapper.deleteTicketByPIds(ids) + planMapper.deletePlan(ids);
+        if (result > 0) {
+            RedisUtil.deleteCaChe(keys);
+        }
+        return result;
     }
 
     public int insertPlan(Plan plan) {
-        return planMapper.insert(plan);
+        plan.setEndDate(getEndTime(String.valueOf(plan.getmId()), plan.getStartDate()));
+        plan.sethId(getHallIDByName(plan.gethName()));
+        int result = planMapper.insert(plan);
+        if (result > 0) {
+            RedisUtil.deleteCaChe(keys);
+        }
+        return result;
     }
 
     public int updatePlan(Plan plan) {

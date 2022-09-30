@@ -27,8 +27,6 @@ public class VideoServlet {
     private VideoService videoService;
     @Autowired
     private Video video;
-    @Autowired
-    private RedisTemplate redisTemplate;
 
     @GetMapping("/movie/upload/{m_id}")
     public String toupload(Model model, @PathVariable("m_id") Integer m_id) {

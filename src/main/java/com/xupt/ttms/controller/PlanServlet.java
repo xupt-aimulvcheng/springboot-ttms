@@ -27,9 +27,6 @@ import java.util.List;
 public class PlanServlet {
     @Autowired
     private PlanService planService;
-    @Autowired
-    private RedisTemplate redisTemplate;
-    private String keys = "plan_";
 
     @RequestMapping(value = "/plan/getAllPlan", method = RequestMethod.GET)
     @ResponseBody
@@ -55,9 +52,6 @@ public class PlanServlet {
         plan.setEndDate(planService.getEndTime(String.valueOf(plan.getmId()), plan.getStartDate()));
         plan.sethId(planService.getHallIDByName(plan.gethName()));
         int result = planService.updatePlan(plan);
-        if (result > 0) {
-            RedisUtil.deleteCaChe(keys,redisTemplate);
-        }
         return (result > 0 ? "修改成功" : "修改失败");
     }
 
@@ -65,9 +59,6 @@ public class PlanServlet {
     @ResponseBody
     public String deletePlan(@PathVariable String ids) {
         int result =planService.deletePlan(ids);
-        if (result > 0) {
-            RedisUtil.deleteCaChe(keys,redisTemplate);
-        }
         return result <= 0 ? "删除失败" : "删除成功";
     }
 
@@ -83,12 +74,7 @@ public class PlanServlet {
             return "抱歉，无该演出厅,请输入正确的数据";
         if (!planService.getPlanByName(plan.getpName()).isEmpty())
             return "抱歉，该演出计划已存在,请输入正确的数据";
-        plan.setEndDate(planService.getEndTime(String.valueOf(plan.getmId()), plan.getStartDate()));
-        plan.sethId(planService.getHallIDByName(plan.gethName()));
         int result = planService.insertPlan(plan);
-        if (result > 0) {
-            RedisUtil.deleteCaChe(keys,redisTemplate);
-        }
         return (result > 0 ? "添加成功" : "添加失败");
     }
 

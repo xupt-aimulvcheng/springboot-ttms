@@ -37,15 +37,11 @@ public class MovieServlet {
     private MovieService movieService;
     @Autowired
     private RedisTemplate redisTemplate;
-    private String keys = "movie_*";
 
     @RequestMapping(value = "/movie/updateMovie", method = RequestMethod.POST)
     @ResponseBody
     public String updateMovie(@RequestBody Movie movie) {
         int result = movieService.updateMovie(movie.getId(), movie);
-        if (result>=1){
-            RedisUtil.deleteCaChe(keys,redisTemplate);
-        }
         return (result >= 1 ? "修改成功" : "修改失败");
     }
 
@@ -88,38 +84,23 @@ public class MovieServlet {
     @ResponseBody
     @Cacheable(value ="movie_",keyGenerator = "movieKeyGenerator")
     public Result GetMovieByStatus(@RequestParam(value = "page",required = false) Integer pageNum, @RequestParam(value = "limit",required = false) Integer pageSize, @RequestParam(value = "type", required = false) Integer kind) {
-        if (pageNum==null){
-            pageNum=1;
+        if (pageNum == null) {
+            pageNum = 1;
         }
-        if (pageSize==null){
-            pageSize=5;
+        if (pageSize == null) {
+            pageSize = 5;
         }
-        if (kind==null){
-            PageInfo<Movie> movies = movieService.getMovie(null,null,null,"上映中",pageNum,pageSize);
+        if (kind == null) {
+            PageInfo<Movie> movies = movieService.getMovie(null, null, null, "上映中", pageNum, pageSize);
             Result result = ToResult.getResult(movies);
             return result;
-        }
-        else {
+        } else {
             String type = movieService.getType(kind);
-            PageInfo<Movie> movies = movieService.getMoviesByType("上映中",type, pageNum, pageSize);
+            PageInfo<Movie> movies = movieService.getMoviesByType("上映中", type, pageNum, pageSize);
             Result result = ToResult.getResult(movies);
             return result;
         }
     }
-
-    @RequestMapping("/toMovie/{status}")
-    public String toController(RedirectAttributes attr, @PathVariable String status){//第一个controller中传入RedirectAttributes参数
-        attr.addAttribute("status",status);    //封装跳转是需要携带的参数
-        return "redirect:/user/index";
-    }
-
-    @RequestMapping("/otherController")
-    public String toOtherController(String status,Model model){//这里传入param需要和attr中的key一样
-        System.out.println("param-----:"+status);//这里输出的为:"param-----:test"
-        model.addAttribute("param", status);  //Model封装参数,携带到前台
-        return "user/index";
-    }
-
     @GetMapping("/movie/getLenReleased")
     @ResponseBody
     @Cacheable(value ="movie_",keyGenerator = "movieKeyGenerator")
@@ -134,32 +115,10 @@ public class MovieServlet {
                            @RequestParam("mType") String mType, @RequestParam("mLength") Integer mLength,@RequestParam("mDate") String mDate,
                            @RequestParam("mDirector") String mDirector,@RequestParam("mActor") String mActor, Double mBoxOffice,
                            Double mScore,@RequestParam("mIntroduction") String mIntroduction, String mImage, @RequestParam("status") String status) throws IOException {
-        String fileName = photo.getOriginalFilename();
-        //处理文件重名问题
-        String hzName = fileName.substring(fileName.lastIndexOf("."));
-        fileName = UUID.randomUUID().toString() + hzName;
-        //获取服务器中photo目录的路径
-        ServletContext servletContext = session.getServletContext();
-        String photoPath = "D:\\idea-project\\ttms\\target\\classes\\static\\main\\images\\movie";
-        File file = new File(photoPath);
-        if (!file.exists()) {
-            file.mkdir();
-        }
-        String finalPath = photoPath + File.separator + fileName;
-        String url="../../main/images/movie/"+fileName;
-        //实现上传功能
-        log.info("封面文件的绝对路径为"+finalPath);
-        log.info("数据库存储的的路径为"+url);
-        photo.transferTo(new File(finalPath));
-        Movie movie = new Movie(mName,mType,mLength,mDate,mDirector,mActor,mBoxOffice,mScore,mIntroduction,url,status);
-        System.out.println(movie);
-        int insert = movieService.insert(movie);
-        if (insert>=1){
-            RedisUtil.deleteCaChe(keys,redisTemplate);
-        }
+        Movie movie = new Movie(mName,mType,mLength,mDate,mDirector,mActor,mBoxOffice,mScore,mIntroduction,null,status);
+        int insert = movieService.insert(photo,movie);
         return (insert >= 1 ? "添加成功" : "添加失败");
     }
-
 
     @GetMapping("/user/movie_index/{id}")
     public String toMovie(@PathVariable("id") Integer id,Model model){
@@ -180,9 +139,6 @@ public class MovieServlet {
     @ResponseBody
     public String deleteMovie(@PathVariable("ids") String ids) {
         int delete = movieService.deleteMovie(ids);
-        if (delete>=1) {
-            RedisUtil.deleteCaChe(keys,redisTemplate);
-        }
         return (delete >= 1 ? "删除成功" : "删除失败");
     }
 }

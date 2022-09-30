@@ -7,6 +7,7 @@ import com.xupt.ttms.pojo.Seat;
 import com.xupt.ttms.pojo.Ticket;
 import com.xupt.ttms.service.SeatService;
 import com.xupt.ttms.service.TicketService;
+import com.xupt.ttms.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,8 @@ public class TicketServiceImpl implements TicketService {
     @Autowired
     private PlanMapper planMapper;
 
-//    private static int affect;
+    private String keys = "ticket_*";
+    private String keys1 = "plan_*";
     /**
      * 通过某个演出计划得到单个的票集合
      * @param plans  待上线的演出计划
@@ -68,12 +70,22 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public int insertTicket(List<Plan> plans) {
         List<Ticket> list = getTicketByPlan(plans);
-        return ticketMapper.insertTicker(list)+planMapper.onlinePlan(plans);
+        int result = ticketMapper.insertTicker(list)+planMapper.onlinePlan(plans);
+        if (result>0){
+            RedisUtil.deleteCaChe(keys);
+            RedisUtil.deleteCaChe(keys1);
+        }
+        return result;
     }
 
     @Override
     public int deleteTicket(List<Plan> list) {
-        return ticketMapper.deleteTicket(list)+planMapper.offline(list);
+        int i = ticketMapper.deleteTicket(list) + planMapper.offline(list);
+        if (i>-1){
+            RedisUtil.deleteCaChe(keys);
+            RedisUtil.deleteCaChe(keys1);
+        }
+        return i;
     }
 
     @Override
@@ -89,11 +101,21 @@ public class TicketServiceImpl implements TicketService {
      */
     @Override
     public synchronized int LockTicket(String pId, List<Seat> seat) {
-        return ticketMapper.LockTicket(pId,seat);
+        int i = ticketMapper.LockTicket(pId, seat);
+        if (i>=1) {
+            RedisUtil.deleteCaChe(keys);
+            RedisUtil.deleteCaChe(keys1);
+        }
+        return i;
     }
 
     @Override
     public synchronized int UnLockTicket(String pId, List<Seat> seat) {
-        return ticketMapper.UnLockTicket(pId,seat);
+        int i = ticketMapper.UnLockTicket(pId, seat);
+        if (i>=1){
+            RedisUtil.deleteCaChe(keys);
+            RedisUtil.deleteCaChe(keys1);
+        }
+        return i;
     }
 }

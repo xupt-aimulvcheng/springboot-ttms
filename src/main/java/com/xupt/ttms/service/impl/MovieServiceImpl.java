@@ -5,6 +5,11 @@ package com.xupt.ttms.service.impl;/*
  * @description:
  */
 
+import com.aliyun.oss.ClientException;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.OSSException;
+import com.aliyun.oss.model.PutObjectRequest;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -12,12 +17,21 @@ import com.xupt.ttms.mapper.MovieMapper;
 import com.xupt.ttms.pojo.Movie;
 import com.xupt.ttms.pojo.MovieExample;
 import com.xupt.ttms.service.MovieService;
+import com.xupt.ttms.util.OOSUtil;
+import com.xupt.ttms.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletContext;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -25,6 +39,7 @@ public class MovieServiceImpl implements MovieService {
     private SimpleDateFormat bf = new SimpleDateFormat("yyyy-MM-dd");
     @Autowired
     private MovieMapper movieMapper;
+    private String keys = "movie_*";
 
     /*{
         SqlSession sqlSession = SqlSessionUtil.getSqlSession();
@@ -34,11 +49,36 @@ public class MovieServiceImpl implements MovieService {
     /**
      * 添加电影
      *
+     * @param photo
      * @param movie
      * @return
      */
-    public int insert(Movie movie) {
-        return movieMapper.insert(movie);
+    public int insert(MultipartFile photo, Movie movie) {
+        String fileName = photo.getOriginalFilename();
+        //处理文件重名问题
+        String hzName = fileName.substring(fileName.lastIndexOf("."));
+        fileName = UUID.randomUUID().toString() + hzName;
+        //获取服务器中photo目录的路径
+        String photoPath = "D:\\idea-project\\ttms\\target\\classes\\static\\main\\images\\movie";
+        File file = new File(photoPath);
+        if (!file.exists()) {
+            file.mkdir();
+        }
+        String finalPath = photoPath + File.separator + fileName;
+        String url = "../../main/images/movie/" + fileName;
+        int insert;
+        try {
+            photo.transferTo(new File(finalPath));
+            movie.setmImage(url);
+            insert = movieMapper.insert(movie);
+            if (insert >= 1) {
+                RedisUtil.deleteCaChe(keys);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return insert;
     }
 
     /**
@@ -83,9 +123,9 @@ public class MovieServiceImpl implements MovieService {
     /**
      * 根据电影类型查询电影
      */
-    public PageInfo<Movie> getMoviesByType(String status,String type, int pageNum, int PageSize) {
+    public PageInfo<Movie> getMoviesByType(String status, String type, int pageNum, int PageSize) {
         Page<Movie> Movies = PageHelper.startPage(pageNum, PageSize);
-        List<Movie> movies = movieMapper.getMoviesByType(status,type);
+        List<Movie> movies = movieMapper.getMoviesByType(status, type);
         PageInfo<Movie> pageInfo = new PageInfo(movies, 5);//5指的是导航分页的总页码数
         return pageInfo;
     }
@@ -100,6 +140,11 @@ public class MovieServiceImpl implements MovieService {
         return movieMapper.selectByPrimaryKey(id);
     }
 
+    /**
+     * 正在上映的电影数量
+     *
+     * @return
+     */
     @Override
     public int getLenReleased() {
         return movieMapper.getLenReleased();
@@ -116,7 +161,11 @@ public class MovieServiceImpl implements MovieService {
     public int updateMovie(Integer id, Movie movie) {
         MovieExample movieExample = new MovieExample();
         movieExample.createCriteria().andIdEqualTo(id);
-        return movieMapper.updateByExampleSelective(movie, movieExample);
+        int result = movieMapper.updateByExampleSelective(movie, movieExample);
+        if (result >= 1) {
+            RedisUtil.deleteCaChe(keys);
+        }
+        return result;
     }
 
     @Override
@@ -160,13 +209,6 @@ public class MovieServiceImpl implements MovieService {
         return status;
     }
 
-    /**
-     * 根据id删除电影
-     */
-    public int deleteMovie(int id) {
-        return movieMapper.deleteByPrimaryKey(id);
-    }
-
     public Movie getMovieById(int id) {
         return movieMapper.getMovieById(id);
     }
@@ -175,7 +217,11 @@ public class MovieServiceImpl implements MovieService {
      * 批量删除演出厅
      */
     public int deleteMovie(String ids) {
-        return movieMapper.deleteById(ids);
+        int delete = movieMapper.deleteById(ids);
+        if (delete >= 1) {
+            RedisUtil.deleteCaChe(keys);
+        }
+        return delete;
     }
 
 
